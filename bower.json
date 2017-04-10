@@ -1,0 +1,14 @@
+{
+  "name": "tcc-room-reservation",
+  "homepage": "https://github.com/sushain97/room-booking",
+  "authors": [
+    "Sushain Cherivirala <sushain@skc.name>"
+  ],
+  "description": "TCC Room Reservation System",
+  "main": "",
+  "license": "AGPLv3",
+  "dependencies": {
+    "materialize": "^0.98.1",
+    "jquery": "^3.2.1"
+  }
+}
