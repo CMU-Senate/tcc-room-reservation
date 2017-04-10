@@ -108,10 +108,9 @@
 
     <script type="text/javascript" src="{{ url_for('bower.static', filename='jquery/dist/jquery.min.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('bower.static', filename='materialize/bin/materialize.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/base.js') }}"></script>
     <script type="text/javascript">
       $(document).ready(function () {
-         $('.button-collapse').sideNav();
-
          {% with messages = get_flashed_messages() %}
            {% if messages %}
              {% for message in messages %}

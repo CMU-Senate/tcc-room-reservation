@@ -1,0 +1,32 @@
+{
+  "name": "tcc-room-reservation",
+  "version": "0.0.0",
+  "description": "Reserve the glass rooms within the Tartan Collaborative Commons!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sushain97/room-booking.git"
+  },
+  "author": "Sushain Cherivirala <sushain@cs.cmu.edu>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sushain97/room-booking/issues"
+  },
+  "homepage": "https://github.com/sushain97/room-booking#readme",
+  "devDependencies": {
+    "babel-preset-env": "^1.3.2",
+    "bower": "^1.8.0",
+    "eslint": "^3.18.0",
+    "grunt": "^1.0.1",
+    "grunt-babel": "^6.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-htmlhint": "^0.9.13",
+    "grunt-sass": "^2.0.0",
+    "grunt-scss-lint": "^0.5.0",
+    "gruntify-eslint": "^3.1.0",
+    "node-sass": "^4.5.2",
+    "scss-lint": "0.0.0"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.23.0"
+  }
+}

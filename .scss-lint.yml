@@ -1,0 +1,11 @@
+severity: error
+
+linters:
+  Indentation:
+    width: 4
+  IdSelector:
+    enabled: false
+  Comment:
+    enabled: false
+  SingleLinePerSelector:
+    enabled: false

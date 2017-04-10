@@ -2,9 +2,9 @@
   "name": "tcc-room-reservation",
   "homepage": "https://github.com/sushain97/room-booking",
   "authors": [
-    "Sushain Cherivirala <sushain@skc.name>"
+    "Sushain Cherivirala <sushain@cs.cmu.edu>"
   ],
-  "description": "TCC Room Reservation System",
+  "description": "Reserve the glass rooms within the Tartan Collaborative Commons!",
   "main": "",
   "license": "AGPLv3",
   "dependencies": {
