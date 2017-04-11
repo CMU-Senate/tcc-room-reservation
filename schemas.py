@@ -1,8 +1,18 @@
 from models import Reservation
+from setup import ma
 
-from marshmallow_sqlalchemy import ModelSchema
+from marshmallow import fields
 
-class ReservationSchema(ModelSchema):
+class ReservationSchema(ma.ModelSchema):
+    user = fields.Method('get_user')
+
+    def get_user(self, reservation):
+        user = self.context
+        if True or user.admin or reservation.user == user:
+            return reservation.user.id
+        else:
+            return None
+
     class Meta:
         model = Reservation
 

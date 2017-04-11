@@ -6,6 +6,7 @@ django-htmlmin==0.10.0
 Flask==0.12.1
 Flask-Bower==1.2.1
 Flask-Login==0.4.0
+flask-marshmallow==0.7.0
 Flask-Script==2.0.5
 Flask-SQLAlchemy==2.2
 html5lib==0.999999999

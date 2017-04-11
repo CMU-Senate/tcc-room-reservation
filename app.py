@@ -21,6 +21,8 @@ def load_user(id):
 @app.before_request
 def global_user():
     g.user = flask_login.current_user
+    reservation_schema.context = {'user': g.user}
+    reservations_schema.context = {'user': g.user}
 
 @app.after_request
 def minify_html(response):
@@ -54,7 +56,7 @@ def get_reservations(room):
     room = Room.query.filter_by(id=room).first()
     if room:
         reservations = room.reservations.filter(Reservation.cancelled.in_([True, False] if g.user.admin else [False]))
-        return jsonify(reservations_schema.dump(reservations).data)
+        return reservations_schema.jsonify(reservations)
     else:
         return abort(404)
 
@@ -63,7 +65,7 @@ def get_reservations(room):
 def get_reservation(reservation):
     reservation = Reservation.query.filter(id == reservation).first()
     if reservation:
-        return jsonify(reservation_schema.dump(reservation).data)
+        return reservation_schema.jsonify(reservation)
     else:
         return abort(404)
 
@@ -79,6 +81,7 @@ def add_reservation():
 
         start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
 
+        # TODO: Abstract validation to make edit_reservation easier
         starts_in_future = start > datetime.datetime.now()
         starts_in_near_future = starts_in_future and ((start - datetime.datetime.now()) <= datetime.timedelta(days=10))
         ends_after_start = end > start
@@ -101,6 +104,11 @@ def add_reservation():
             return abort(400)
     else:
         return abort(400)
+
+@app.route('/reservation/add', methods=['POST'])
+@login_required
+def edit_reservation():
+    ... # TODO: Write this
 
 @app.route('/reservation/<int:reservation>/cancel', methods=['POST'])
 @login_required

@@ -109,6 +109,7 @@
     <script type="text/javascript" src="{{ url_for('bower.static', filename='materialize/bin/materialize.js') }}"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/base.js') }}"></script>
     <script type="text/javascript">
+      var userId = '{{ g.user.id }}';
       $(document).ready(function () {
          {% with messages = get_flashed_messages() %}
            {% if messages %}

@@ -1,5 +1,7 @@
 'use strict';
 
+/* global userId */
+
 const CALENDAR_DAYS_INTO_FUTURE = 10,
     RESERVATION_TOAST_DURATION_SECONDS = 3000;
 
@@ -11,6 +13,8 @@ $(document).ready(() => {
             allDaySlot: false,
             selectable: true,
             eventOverlap: false,
+            // TODO: add editable
+            // TODO: add deletion
             header: {
                 left: 'today',
                 center: '',
@@ -23,7 +27,20 @@ $(document).ready(() => {
                         start: start.unix(),
                         end: end.unix(),
                     },
-                    success: callback,
+                    success: (events) => {
+                        callback(events.map(
+                            (event) => {
+                                if (event.user === userId) {
+                                    event.color = 'green';
+                                }
+                                if (event.cancelled) {
+                                    event.color = 'lightgray';
+                                }
+
+                                return event;
+                            }
+                        ));
+                    },
                 });
             },
             select: (start, end) => {
