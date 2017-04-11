@@ -3,14 +3,25 @@
 {% block main %}
 <div class="section">
   <div class="container">
-    <h1 class="center amber-text text-darken-4">TCC Room Reservation System</h1>
     <div class="row center">
       <ul class="tabs tabs-fixed-width">
-        <li class="tab col s6"><a href="#room1" class="amber-text text-darken-4">Room 1</a></li>
-        <li class="tab col s6"><a href="#room2" class="amber-text text-darken-4">Room 2</a></li>
+        {% for room in rooms %}
+          <li class="tab col s3"><a href="#room-{{ room.id }}" class="amber-text text-darken-4">{{ room.name }}</a></li>
+        {% endfor %}
       </ul>
-      <div id="room1"><div id="calendar"></div></div>
-      <div id="room2"></div>
+
+      {% for room in rooms %}
+      <div id="room-{{ room.id }}">
+        {% if room.description %}
+          <p class="flow-text">{{ room.description }}</p>
+        {% endif %}
+        {% if room.reservable %}
+          <div class="calendar" data-room-id="{{ room.id }}"></div>
+        {% else %}
+          <h5>This room is currently not reservable.</h5>
+        {% endif %}
+      </div>
+      {% endfor %}
     </div>
   </div>
 </div>

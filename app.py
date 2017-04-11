@@ -3,7 +3,7 @@
 import datetime
 
 from setup import app, login_manager, version, db_session, manager
-from models import User
+from models import User, Room
 
 import flask_login
 from flask import render_template, g, request, session, redirect
@@ -47,6 +47,22 @@ def inject_user():
     except AttributeError:
         return {'user': None}
 
+@app.route('/reservations/<int:room>')
+def get_reservations(room):
+    ...
+
+@app.route('/reservations/<int:reservation>')
+def get_reservation(reservation):
+    ...
+
+@app.route('/reservations/add')
+def add_reservation():
+    ...
+
+@app.route('/reservations/<int:reservation>/delete')
+def delete_reservation(reservation):
+    ...
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -59,11 +75,11 @@ def index():
         g.user.last_login = datetime.datetime.now()
         db_session.commit()
 
-    template = 'index.html'
+    template = 'reservations.html'
     if g.user and g.user.is_authenticated:
         template = 'reservations.html'
 
-    return render_template(template)
+    return render_template(template, rooms=Room.query.all())
 
 if __name__ == '__main__':
     manager.run()

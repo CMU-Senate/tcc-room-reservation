@@ -1,3 +1,5 @@
+$indicator-color: #ff6f00;
+
 .fc table tbody {
     font-size: .9em;
     line-height: 1.25;
@@ -5,4 +7,8 @@
 
 .tabs {
     margin-bottom: 1em;
+
+    .indicator {
+        background-color: $indicator-color;
+    }
 }

@@ -69,6 +69,7 @@
         <ul class="right hide-on-med-and-down">
           {% if user and user.admin %}<li><a href="/admin">Admin</a></li>{% endif %}
           {% if user %}
+            <li><a href="/reservations">Reservations</a></li>
             <li><a href="/logout">Logout ({{ user.id }})</a></li>
           {% endif %}
         </ul>

@@ -16,5 +16,5 @@
   "attr-unsafe-chars": true,
   "title-require": true,
   "inline-style-disabled": true,
-  "id-class-value": "dash"
+  "id-class-value": false
 }

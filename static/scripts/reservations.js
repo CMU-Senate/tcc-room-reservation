@@ -1,7 +1,7 @@
 'use strict';
 
 $(document).ready(() => {
-    $('#calendar').fullCalendar({
+    $('.calendar').fullCalendar({
         defaultView: 'agendaWeek',
         allDaySlot: false,
         selectable: true,

@@ -26,6 +26,7 @@ class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True)
     description = db.Column(db.String(500))
+    reservable = db.Column(db.Boolean)
     reservations = db.relationship('Reservation', backref='room', lazy='dynamic')
 
 class Reservation(db.Model):

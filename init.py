@@ -6,8 +6,12 @@ class Init(Command):
 
     def run(self):
         from setup import db, db_session, engine
+        from models import Room
 
         models.PSABase.metadata.create_all(engine)
         db.create_all()
+        db_session.commit()
 
+        db_session.add(Room(name='Glass Room 1', reservable=True))
+        db_session.add(Room(name='Glass Room 2', reservable=False))
         db_session.commit()
