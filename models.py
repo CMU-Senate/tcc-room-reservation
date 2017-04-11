@@ -9,7 +9,7 @@ admins = [
 ]
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.String(8), primary_key=True) #andrew_id
+    id = db.Column(db.String(8), primary_key=True) # andrew_id
     admin = db.Column(db.Boolean)
     last_login = db.Column(db.DateTime, default=func.now())
 

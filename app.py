@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from config import app, login_manager, version
+from config import app, login_manager, version, db_session
+from models import User
 
 from flask import render_template, g
 
