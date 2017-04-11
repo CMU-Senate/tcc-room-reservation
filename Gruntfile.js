@@ -13,6 +13,7 @@ module.exports = function (grunt) {
                 },
                 files: {
                     'static/styles/css/base.css': 'static/styles/base.scss',
+                    'static/styles/css/index.css': 'static/styles/index.scss',
                 },
             },
         },

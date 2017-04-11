@@ -5,7 +5,7 @@
   <div class="container">
     <h1 class="center amber-text text-darken-3">TCC Room Reservation System</h1>
     <div class="row center">
-      <h4 class="col s12 light" style="margin-bottom: 1.5em; line-height: 48px;">
+      <h4 class="col s12 light" id="title">
         Book the Tartan Collaborative Commons' Glass Room
       </h4>
 
@@ -13,7 +13,10 @@
         <i class="material-icons left">person</i> Login
       </a>
     </div>
-
   </div>
 </div>
+{% endblock %}
+
+{% block css %}
+<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles/css/index.css') }}">
 {% endblock %}
