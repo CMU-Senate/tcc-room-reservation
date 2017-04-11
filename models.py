@@ -12,6 +12,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(100)) # required for Social Flask
     admin = db.Column(db.Boolean)
     last_login = db.Column(db.DateTime, default=func.now())
+    reservations = db.relationship('Reservation', backref='user', lazy='dynamic')
 
     def __init__(self, *args, **kwargs):
         self.id = kwargs.get('id', kwargs.get('email').split('@')[0])
@@ -20,3 +21,17 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return 'User <%r>' % self.id
+
+class Room(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), unique=True)
+    description = db.Column(db.String(500))
+    reservations = db.relationship('Reservation', backref='room', lazy='dynamic')
+
+class Reservation(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'))
+    start = db.Column(db.DateTime)
+    end = db.Column(db.DateTime)
+    cancelled = db.Column(db.Boolean, default=False)
