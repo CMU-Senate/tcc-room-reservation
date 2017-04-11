@@ -1,0 +1,12 @@
+sudo: required
+language: node_js
+node_js:
+  - stable
+python:
+  - stable
+script:
+  - grunt
+  - flake8 *.py
+install:
+  - npm install
+  - pip install flake8
