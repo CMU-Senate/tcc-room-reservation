@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 
+import datetime
+
 from setup import app, login_manager, version, db_session, manager
 from models import User
 
-from flask import render_template, g
-
 import flask_login
+from flask import render_template, g, request, session, redirect
+from flask_login import logout_user
 from htmlmin.minify import html_minify
 
 @login_manager.user_loader
@@ -18,10 +20,6 @@ def load_user(id):
 @app.before_request
 def global_user():
     g.user = flask_login.current_user
-
-@app.context_processor
-def inject_version():
-    return dict(version=version)
 
 @app.after_request
 def minify_html(response):
@@ -38,8 +36,29 @@ def inject_anlytics_tracking_id():
     else:
         return {}
 
+@app.context_processor
+def inject_version():
+    return dict(version=version)
+
+@app.context_processor
+def inject_user():
+    try:
+        return {'user': g.user if g.user.is_authenticated else None}
+    except AttributeError:
+        return {'user': None}
+
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/')
+
 @app.route('/')
 def index():
+    if request.args.get('logged_in', False):
+        session['last_login'] = g.user.last_login
+        g.user.last_login = datetime.datetime.now()
+        db_session.commit()
+
     return render_template('index.html')
 
 if __name__ == '__main__':
