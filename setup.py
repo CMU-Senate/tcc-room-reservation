@@ -2,8 +2,9 @@ import subprocess
 import sys
 import configparser
 
-from flask import Flask
+from init import Init
 
+from flask import Flask
 from flask_bower import Bower
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -32,6 +33,7 @@ manager.add_command('shell', Shell(make_context=lambda: {
     'app': app,
     'db_session': db_session
 }))
+manager.add_command('init', Init())
 
 Bower(app)
 

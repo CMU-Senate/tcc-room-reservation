@@ -9,7 +9,8 @@ admins = [
 ]
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.String(8), primary_key=True) # andrew_id
+    id = db.Column(db.String(8), primary_key=True) # Andrew ID
+    username = db.Column(db.String(100)) # required for Social Flask
     admin = db.Column(db.Boolean)
     last_login = db.Column(db.DateTime, default=func.now())
 
