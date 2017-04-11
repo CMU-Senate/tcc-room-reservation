@@ -7,6 +7,7 @@ from flask import Flask
 from flask_bower import Bower
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask_script import Server, Manager, Shell
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
 from sqlalchemy import create_engine
@@ -24,6 +25,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+
+manager = Manager(app)
+manager.add_command('runserver', Server())
+manager.add_command('shell', Shell(make_context=lambda: {
+    'app': app,
+    'db_session': db_session
+}))
 
 Bower(app)
 

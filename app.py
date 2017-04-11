@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from config import app, login_manager, version, db_session
+from setup import app, login_manager, version, db_session, manager
 from models import User
 
 from flask import render_template, g
@@ -43,4 +43,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    manager.run()
