@@ -1,0 +1,6 @@
+rules:
+  indentation:
+    - 1
+    - size: 4
+  no-ids: 0
+  single-line-per-selector: 0

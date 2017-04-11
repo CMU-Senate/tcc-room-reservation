@@ -33,12 +33,12 @@ module.exports = function (grunt) {
             },
             target: ['static/scripts/base.js'],
         },
-        scsslint: {
-            allFiles: [
-                'static/styles/base.scss',
+        sasslint: {
+            target: [
+                'static/styles/*.scss',
             ],
             options: {
-                config: '.scss-lint.yml',
+                configFile: '.sass-lint.yml',
             },
         },
         htmlhint: {
@@ -62,11 +62,11 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks('gruntify-eslint');
-    grunt.loadNpmTasks('grunt-scss-lint');
+    grunt.loadNpmTasks('grunt-sass-lint');
     grunt.loadNpmTasks('grunt-htmlhint');
     grunt.loadNpmTasks('grunt-sass');
     grunt.loadNpmTasks('grunt-babel');
     grunt.loadNpmTasks('grunt-contrib-watch');
 
-    grunt.registerTask('default', ['sass', 'eslint', 'scsslint', 'htmlhint', 'babel']);
+    grunt.registerTask('default', ['sass', 'eslint', 'sasslint', 'htmlhint', 'babel']);
 };
