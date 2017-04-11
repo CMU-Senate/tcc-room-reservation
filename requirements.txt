@@ -12,6 +12,8 @@ html5lib==0.999999999
 itsdangerous==0.24
 Jinja2==2.9.6
 MarkupSafe==1.0
+marshmallow==2.13.4
+marshmallow-sqlalchemy==0.13.1
 mccabe==0.6.1
 oauthlib==2.0.2
 packaging==16.8

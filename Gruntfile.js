@@ -33,7 +33,7 @@ module.exports = function (grunt) {
             options: {
                 configFile: '.eslintrc.json',
             },
-            target: ['static/scripts/base.js'],
+            target: ['static/scripts/base.js', 'static/scripts/reservation.js'],
         },
         sasslint: {
             target: [
