@@ -14,6 +14,7 @@ module.exports = function (grunt) {
                 files: {
                     'static/styles/css/base.css': 'static/styles/base.scss',
                     'static/styles/css/index.css': 'static/styles/index.scss',
+                    'static/styles/css/reservations.css': 'static/styles/reservations.scss',
                 },
             },
         },
@@ -24,6 +25,7 @@ module.exports = function (grunt) {
             dist: {
                 files: {
                     'static/scripts/dist/base.js': 'static/scripts/base.js',
+                    'static/scripts/dist/reservations.js': 'static/scripts/reservations.js',
                 },
             },
         },
@@ -46,7 +48,7 @@ module.exports = function (grunt) {
                 htmlhintrc: '.htmlhintrc',
             },
             html1: {
-                src: ['templates/base.html', 'templates/index.html'],
+                src: ['templates/base.html', 'templates/index.html', 'templates/reservations.html'],
             },
         },
         watch: {

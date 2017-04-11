@@ -4,3 +4,4 @@ rules:
     - size: 4
   no-ids: 0
   single-line-per-selector: 0
+  force-element-nesting: 0

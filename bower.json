@@ -9,6 +9,7 @@
   "license": "AGPLv3",
   "dependencies": {
     "materialize": "^0.98.1",
-    "jquery": "^3.2.1"
+    "jquery": "^3.2.1",
+    "fullcalendar": "^3.3.1"
   }
 }

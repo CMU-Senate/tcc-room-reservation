@@ -59,7 +59,11 @@ def index():
         g.user.last_login = datetime.datetime.now()
         db_session.commit()
 
-    return render_template('index.html')
+    template = 'index.html'
+    if g.user and g.user.is_authenticated:
+        template = 'reservations.html'
+
+    return render_template(template)
 
 if __name__ == '__main__':
     manager.run()
