@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import configparser
 
 from flask import Flask
 
@@ -11,12 +12,16 @@ from social_flask_sqlalchemy.models import init_social
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+config = configparser.ConfigParser()
+config.read('settings.cfg')
+config = config['DEFAULT']
+
 app = Flask(__name__)
 app.config['DEBUG'] = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = config['DB_PATH']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
+db = SQLAlchemy(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
@@ -24,9 +29,9 @@ Bower(app)
 
 version = subprocess.check_output(['git', 'describe', '--tags']).decode(sys.stdout.encoding).strip()
 
-app.config['GOOGLE_ANALYTICS_TRACKING_ID'] = ''
+app.config['GOOGLE_ANALYTICS_TRACKING_ID'] = config['GOOGLE_ANALYTICS_TRACKING_ID']
 
-app.config['SECRET_KEY'] = 'development'
+app.config['SECRET_KEY'] = config['SECRET_KEY']
 app.config['SESSION_PROTECTION'] = 'strong'
 app.config['SOCIAL_AUTH_LOGIN_URL'] = '/login'
 app.config['SOCIAL_AUTH_LOGIN_REDIRECT_URL'] = '/?logged_in=1'
@@ -38,12 +43,8 @@ app.config['SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS'] = {
     'access_type': 'online',
     'approval_prompt': 'auto'
 }
-
-google_oath2_client_id = ''
-google_oauth2_secret = ''
-
-app.config['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'] = google_oath2_client_id
-app.config['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET'] = google_oauth2_secret
+app.config['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY'] = config['GOOGLE_OATH2_CLIENT_ID']
+app.config['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET'] = config['GOOGLE_OATH2_SECRET']
 
 app.register_blueprint(social_auth)
 init_social(app, db_session)
@@ -53,5 +54,5 @@ login_manager.login_view = 'index'
 login_manager.login_message = 'Please login to access that page.'
 login_manager.init_app(app)
 
-app.config['SMTP_EMAIL'] = 'sushain@cs.cmu.edu'
-app.config['CONTACT_EMAIL'] = 'sushain@cs.cmu.edu'
+app.config['SMTP_EMAIL'] = config['SMTP_EMAIL']
+app.config['CONTACT_EMAIL'] = config['CONTACT_EMAIL']
