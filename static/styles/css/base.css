@@ -1,20 +1,3 @@
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-main {
-  flex: 1 0 auto;
-}
-
-#code-icon {
-  position: relative;
-  top: 2.5px;
-}
-
-#license-container {
-  margin-right: -140px;
-}
+body{display:flex;flex-direction:column;min-height:100vh}main{flex:1 0 auto}#code-icon{position:relative;top:2.5px}#license-container{margin-right:-140px}
 
 /*# sourceMappingURL=base.css.map */
