@@ -1,6 +1,6 @@
 'use strict';
 
-/* global userId */
+/* global app */
 
 const CALENDAR_DAYS_INTO_FUTURE = 10,
     RESERVATION_TOAST_DURATION_SECONDS = 3000;
@@ -24,13 +24,13 @@ $(document).ready(() => {
                 $.get({
                     url: `/reservations/${roomId}`,
                     data: {
-                        start: start.unix(),
+                        start: start.clone().startOf('week').unix(),
                         end: end.unix(),
                     },
                     success: (events) => {
                         callback(events.map(
                             (event) => {
-                                if (event.user === userId) {
+                                if (event.user === app.userId) {
                                     event.color = 'green';
                                 }
                                 if (event.cancelled) {
@@ -51,8 +51,14 @@ $(document).ready(() => {
                         start: start.unix(),
                         end: end.unix(),
                     },
-                    success: () => {
-                        Materialize.toast('Success! Your reservation has been made.', RESERVATION_TOAST_DURATION_SECONDS);
+                    success: (response) => {
+                        if (response.success) {
+                            Materialize.toast('Success! Your reservation has been made.', RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                        else {
+                            Materialize.toast(`Failed to create a reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                        app.csrfToken = response.csrf_token;
                     },
                     error: () => {
                         Materialize.toast('Failed to create a reservation.', RESERVATION_TOAST_DURATION_SECONDS);

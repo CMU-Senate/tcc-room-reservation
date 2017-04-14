@@ -2,53 +2,26 @@
 
 import datetime
 
-from setup import app, login_manager, version, db_session, manager
-from models import User, Room, Reservation
+from setup import app, login_manager, db_session, manager
+from models import Room, Reservation
 from schemas import reservation_schema, reservations_schema
+from utils import minify_html, inject_anlytics_tracking_id, inject_version, success, error
+from utils.csrf import check_csrf_token, inject_csrf_token
+from utils.users import load_user, global_user, inject_user
 
-import flask_login
-from flask import render_template, g, request, session, redirect, jsonify, abort
+from flask import render_template, g, request, session, redirect, abort
 from flask_login import logout_user, login_required
-from htmlmin.minify import html_minify
 
-@login_manager.user_loader
-def load_user(id):
-    try:
-        return db_session.query(User).get(id)
-    except (TypeError, ValueError):
-        pass
+login_manager.user_loader(load_user)
+app.before_request(global_user)
 
-@app.before_request
-def global_user():
-    g.user = flask_login.current_user
-    reservation_schema.context = {'user': g.user}
-    reservations_schema.context = {'user': g.user}
+app.before_request(check_csrf_token)
+app.context_processor(inject_csrf_token)
+app.context_processor(inject_user)
 
-@app.after_request
-def minify_html(response):
-    if response.content_type == u'text/html; charset=utf-8':
-        response.set_data(
-            html_minify(response.get_data(as_text=True))
-        )
-    return response
-
-@app.context_processor
-def inject_anlytics_tracking_id():
-    if 'GOOGLE_ANALYTICS_TRACKING_ID' in app.config:
-        return dict(google_analytics_tracking_id=app.config['GOOGLE_ANALYTICS_TRACKING_ID'])
-    else:
-        return {}
-
-@app.context_processor
-def inject_version():
-    return dict(version=version)
-
-@app.context_processor
-def inject_user():
-    try:
-        return {'user': g.user if g.user.is_authenticated else None}
-    except AttributeError:
-        return {'user': None}
+app.after_request(minify_html)
+app.context_processor(inject_anlytics_tracking_id)
+app.context_processor(inject_version)
 
 @app.route('/reservations/<int:room>')
 @login_required
@@ -77,7 +50,7 @@ def add_reservation():
     if start and end and room:
         room = Room.query.filter_by(id=int(room)).first()
         if not room:
-            return abort(400)
+            return error('Invalid room number')
 
         start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
 
@@ -99,11 +72,11 @@ def add_reservation():
                 end=end
             ))
             db_session.commit()
-            return jsonify({'success': True})
+            return success()
         else:
-            return abort(400)
+            return error('Invalid reservation time/duration')
     else:
-        return abort(400)
+        return error('Missing required inputs')
 
 @app.route('/reservation/add', methods=['POST'])
 @login_required
@@ -118,9 +91,9 @@ def cancel_reservation(reservation):
         reservation.cancelled = True
         db_session.commit()
 
-        return jsonify({'success': True})
+        return success()
     else:
-        return abort(400)
+        return error('Unauthorized to cancel that reservation' if reservation else 'Invalid reservation')
 
 @app.route('/logout')
 def logout():
