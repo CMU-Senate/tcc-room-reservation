@@ -58,7 +58,7 @@ def add_reservation():
         starts_in_future = start > datetime.datetime.now()
         starts_in_near_future = starts_in_future and ((start - datetime.datetime.now()) <= datetime.timedelta(days=10))
         ends_after_start = end > start
-        valid_duration = datetime.timedelta(minutes=30) <= (end - start) < datetime.timedelta(hours=2)
+        valid_duration = datetime.timedelta(minutes=30) <= (end - start) <= datetime.timedelta(hours=3)
         overlaps = room.reservations.filter_by(cancelled=False).filter(
             ((Reservation.start <= start) & (Reservation.end > start)) |
             ((Reservation.start >= start) & (Reservation.end <= end)) |

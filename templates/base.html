@@ -110,7 +110,8 @@
     <script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/base.js') }}"></script>
     <script type="text/javascript">
       var app = {
-          userId: '{{ g.user.id }}',
+          userId: '{{ user.id }}',
+          admin: {% if user and user.admin %} true {% else %} false {% endif %},
           csrfToken: '{{ csrf_token }}'
       };
       $(document).ready(function () {

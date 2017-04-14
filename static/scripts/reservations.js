@@ -3,6 +3,7 @@
 /* global app */
 
 const CALENDAR_DAYS_INTO_FUTURE = 10,
+    MAXIMUM_DURATION_HOURS = 3,
     RESERVATION_TOAST_DURATION_SECONDS = 3000;
 
 $(document).ready(() => {
@@ -13,6 +14,7 @@ $(document).ready(() => {
             allDaySlot: false,
             selectable: true,
             eventOverlap: false,
+            selectOverlap: false,
             // TODO: add editable
             // TODO: add deletion
             header: {
@@ -74,6 +76,7 @@ $(document).ready(() => {
                     end: now.clone().add(CALENDAR_DAYS_INTO_FUTURE, 'days'),
                 };
             },
+            selectAllow: info => info.end.diff(info.start, 'hours') <= MAXIMUM_DURATION_HOURS || app.admin,
         });
     });
 });
