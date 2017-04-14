@@ -50,21 +50,11 @@ def add_reservation():
     if start and end and room:
         room = db_session.query(Room).filter_by(id=int(room)).first()
         if not room:
-            return error('Invalid room number')
+            return error('Invalid room')
 
         start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
 
-        # TODO: Abstract validation to make edit_reservation easier
-        starts_in_future = start > datetime.datetime.now()
-        starts_in_near_future = starts_in_future and ((start - datetime.datetime.now()) <= datetime.timedelta(days=10))
-        ends_after_start = end > start
-        valid_duration = datetime.timedelta(minutes=30) <= (end - start) <= datetime.timedelta(hours=3)
-        overlaps = room.reservations.filter_by(cancelled=False).filter(
-            ((Reservation.start <= start) & (Reservation.end > start)) |
-            ((Reservation.start >= start) & (Reservation.end <= end)) |
-            ((Reservation.start < end) & (Reservation.end >= end))
-        ).count()
-        if starts_in_near_future and ends_after_start and (valid_duration or g.user.admin) and overlaps == 0:
+        try:
             db_session.add(Reservation(
                 user_id=g.user.id,
                 room_id=room.id,
@@ -73,15 +63,31 @@ def add_reservation():
             ))
             db_session.commit()
             return success()
-        else:
-            return error('Invalid reservation time/duration')
+        except AssertionError as e:
+            return error(str(e))
     else:
         return error('Missing required inputs')
 
-@app.route('/reservation/add', methods=['POST'])
+@app.route('/reservation/<int:reservation>/edit', methods=['POST'])
 @login_required
-def edit_reservation():
-    ... # TODO: Write this
+def edit_reservation(reservation):
+    start, end = request.form.get('start', None), request.form.get('end', None)
+    if start and end and reservation:
+        reservation = db_session.query(Reservation).filter_by(id=reservation).first()
+        if not reservation:
+            return error('Invalid reservation')
+
+        start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
+
+        try:
+            reservation.start = start
+            reservation.end = end
+            db_session.commit()
+            return success()
+        except AssertionError as e:
+            return error(str(e))
+    else:
+        return error('Missing required inputs')
 
 @app.route('/reservation/<int:reservation>/cancel', methods=['POST'])
 @login_required

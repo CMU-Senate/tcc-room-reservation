@@ -13,11 +13,23 @@ $indicator-color: #ff6f00;
     }
 }
 
-.fc-content {
+.fc-content, .fc-title {
     display: inline-block;
 }
 
+.fc-time-grid-event.fc-short .fc-time {
+    span {
+        display: inline;
+    }
+
+    &::before, &::after {
+        content: normal;
+    }
+}
+
 .cancel-reservation-icon {
+    bottom: 1px;
     float: right;
-    padding-top: 1px;
+    position: absolute;
+    right: 0;
 }

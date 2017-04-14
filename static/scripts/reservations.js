@@ -20,14 +20,9 @@ $(document).ready(() => {
                 else {
                     Materialize.toast(`Failed to cancel your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
                 }
-                app.csrfToken = response.csrf_token;
             },
-            error: () => {
-                Materialize.toast('Failed to cancel your reservation.', RESERVATION_TOAST_DURATION_SECONDS);
-            },
-            complete: () => {
-                $(`.calendar[data-room-id="${reservation.room}"]`).fullCalendar('refetchEvents');
-            },
+            error: () => Materialize.toast('Failed to cancel your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+            complete: () => $(`.calendar[data-room-id="${reservation.room}"]`).fullCalendar('refetchEvents'),
         });
     });
 
@@ -37,12 +32,11 @@ $(document).ready(() => {
             defaultView: 'agendaWeek',
             allDaySlot: false,
             selectable: true,
-            // eslint-disable-next-line no-warning-comments
-            // TODO: Can overlap with cancelled events (mainly for admin)
-            eventOverlap: false,
-            selectOverlap: false,
-            // eslint-disable-next-line no-warning-comments
-            // TODO: add editable
+            eventOverlap: stillEvent => stillEvent.canceled,
+            selectOverlap: event => event.cancelled,
+            eventOrder: '-cancelled',
+            timeFormat: 'hh:mm A',
+            editable: true,
             header: {
                 left: 'today',
                 center: '',
@@ -58,11 +52,15 @@ $(document).ready(() => {
                     success: (events) => {
                         callback(events.map(
                             (event) => {
+                                event.editable = !event.cancelled;
                                 if (event.user === app.userId) {
                                     event.color = 'green';
                                 }
                                 if (event.cancelled) {
                                     event.color = 'gray';
+                                }
+                                if (app.admin) {
+                                    event.title = event.user;
                                 }
 
                                 return event;
@@ -86,14 +84,9 @@ $(document).ready(() => {
                         else {
                             Materialize.toast(`Failed to create a reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
                         }
-                        app.csrfToken = response.csrf_token;
                     },
-                    error: () => {
-                        Materialize.toast('Failed to create a reservation.', RESERVATION_TOAST_DURATION_SECONDS);
-                    },
-                    complete: () => {
-                        $(calendar).fullCalendar('refetchEvents');
-                    },
+                    error: () => Materialize.toast('Failed to create a reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    complete: () => $(calendar).fullCalendar('refetchEvents'),
                 });
             },
             validRange: function (now) {
@@ -104,14 +97,55 @@ $(document).ready(() => {
             },
             selectAllow: info => info.end.diff(info.start, 'hours') <= MAXIMUM_DURATION_HOURS || app.admin,
             eventClick: (event) => {
-                if (event.user === app.userId || app.admin) {
+                if (!event.cancelled && (event.user === app.userId || app.admin)) {
                     $('#cancel-reservation-modal').modal('open');
                     $('#cancel-reservation-modal').find('#cancel-reservation').data('reservation', event);
                 }
             },
+            eventDrop: (event) => {
+                $.post({
+                    url: `reservation/${event.id}/edit`,
+                    data: {
+                        room: roomId,
+                        start: event.start.unix(),
+                        end: event.end.unix(),
+                    },
+                    success: (response) => {
+                        if (response.success) {
+                            Materialize.toast('Success! Your reservation was edited.', RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                        else {
+                            Materialize.toast(`Failed to edit your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                    },
+                    error: () => Materialize.toast('Failed to edit your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    complete: () => $(`.calendar[data-room-id="${event.room}"]`).fullCalendar('refetchEvents'),
+                });
+            },
+            eventResize: (event) => {
+                $.post({
+                    url: `reservation/${event.id}/edit`,
+                    data: {
+                        room: roomId,
+                        start: event.start.unix(),
+                        end: event.end.unix(),
+                    },
+                    success: (response) => {
+                        if (response.success) {
+                            Materialize.toast('Success! Your reservation was edited.', RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                        else {
+                            Materialize.toast(`Failed to edit your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
+                        }
+                    },
+                    error: () => Materialize.toast('Failed to edit your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    complete: () => $(`.calendar[data-room-id="${event.room}"]`).fullCalendar('refetchEvents'),
+                });
+            },
             eventRender: (event, element) => {
                 if (!event.cancelled && (event.user === app.userId || app.admin)) {
                     $(element).append($('<i class="material-icons tiny cancel-reservation-icon">delete</i>'));
+                    $(element).css('cursor', 'pointer');
                 }
             },
         });
