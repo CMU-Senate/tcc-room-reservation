@@ -37,9 +37,11 @@ $(document).ready(() => {
             defaultView: 'agendaWeek',
             allDaySlot: false,
             selectable: true,
+            // eslint-disable-next-line no-warning-comments
             // TODO: Can overlap with cancelled events (mainly for admin)
             eventOverlap: false,
             selectOverlap: false,
+            // eslint-disable-next-line no-warning-comments
             // TODO: add editable
             header: {
                 left: 'today',

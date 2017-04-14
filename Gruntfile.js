@@ -2,6 +2,11 @@
 
 'use strict';
 
+const
+    scripts = ['base.js', 'reservations.js'],
+    styles = ['base.scss', 'index.scss', 'reservations.scss'],
+    templates = ['base.html', 'index.html', 'reservations.html'];
+
 module.exports = function (grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -11,11 +16,11 @@ module.exports = function (grunt) {
                     outputStyle: 'compressed',
                     sourceMap: true,
                 },
-                files: {
-                    'static/styles/css/base.css': 'static/styles/base.scss',
-                    'static/styles/css/index.css': 'static/styles/index.scss',
-                    'static/styles/css/reservations.css': 'static/styles/reservations.scss',
-                },
+                files: styles.reduce((acc, x) => {
+                    acc[`static/styles/css/${x.replace('.scss', '.css')}`] = `static/styles/${x}`;
+
+                    return acc;
+                }, {}),
             },
         },
         babel: {
@@ -23,17 +28,18 @@ module.exports = function (grunt) {
                 sourceMap: true,
             },
             dist: {
-                files: {
-                    'static/scripts/dist/base.js': 'static/scripts/base.js',
-                    'static/scripts/dist/reservations.js': 'static/scripts/reservations.js',
-                },
+                files: scripts.reduce((acc, x) => {
+                    acc[`static/scripts/dist/${x}`] = `static/scripts/${x}`;
+
+                    return acc;
+                }, {}),
             },
         },
         eslint: {
             options: {
                 configFile: '.eslintrc.json',
             },
-            target: ['static/scripts/base.js', 'static/scripts/reservation.js'],
+            target: scripts.map(x => `static/scripts/${x}`),
         },
         sasslint: {
             target: [
@@ -48,7 +54,7 @@ module.exports = function (grunt) {
                 htmlhintrc: '.htmlhintrc',
             },
             html1: {
-                src: ['templates/base.html', 'templates/index.html', 'templates/reservations.html'],
+                src: templates.map(x => `templates/${x}`),
             },
         },
         watch: {
