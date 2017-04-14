@@ -1,8 +1,42 @@
 $indicator-color: #ff6f00;
 
-.fc table tbody {
-    font-size: .9em;
-    line-height: 1.25;
+.fc {
+    table tbody {
+        font-size: .9em;
+        line-height: 1.25;
+
+        tr {
+            height: .85em;
+        }
+    }
+
+    .fc-content, .fc-title {
+        display: inline-block;
+        font-size: .9em;
+    }
+
+    .fc-axis.fc-time {
+        font-size: .8em;
+    }
+
+    .fc-time-grid .fc-slats td {
+        height: 1em;
+    }
+
+    .fc-time-grid-event.fc-short .fc-time {
+        span {
+            display: inline;
+        }
+
+        &::before, &::after {
+            content: normal;
+        }
+    }
+
+    .fc-head-container {
+        border-left: 0;
+        border-top: 0;
+    }
 }
 
 .tabs {
@@ -10,20 +44,6 @@ $indicator-color: #ff6f00;
 
     .indicator {
         background-color: $indicator-color;
-    }
-}
-
-.fc-content, .fc-title {
-    display: inline-block;
-}
-
-.fc-time-grid-event.fc-short .fc-time {
-    span {
-        display: inline;
-    }
-
-    &::before, &::after {
-        content: normal;
     }
 }
 

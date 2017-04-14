@@ -36,6 +36,7 @@ $(document).ready(() => {
             selectOverlap: event => event.cancelled,
             eventOrder: '-cancelled',
             timeFormat: 'hh:mm A',
+            contentHeight: 'auto',
             editable: true,
             header: {
                 left: 'today',
