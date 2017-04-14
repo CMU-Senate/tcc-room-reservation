@@ -26,7 +26,7 @@ app.context_processor(inject_version)
 @app.route('/reservations/<int:room>')
 @login_required
 def get_reservations(room):
-    room = Room.query.filter_by(id=room).first()
+    room = db_session.query(Room).filter_by(id=room).first()
     if room:
         reservations = room.reservations.filter(Reservation.cancelled.in_([True, False] if g.user.admin else [False]))
         return reservations_schema.jsonify(reservations)
@@ -36,7 +36,7 @@ def get_reservations(room):
 @app.route('/reservation/<int:reservation>')
 @login_required
 def get_reservation(reservation):
-    reservation = Reservation.query.filter(id == reservation).first()
+    reservation = db_session.query(Reservation).filter(id == reservation).first()
     if reservation:
         return reservation_schema.jsonify(reservation)
     else:
@@ -48,7 +48,7 @@ def add_reservation():
     start, end = request.form.get('start', None), request.form.get('end', None)
     room = request.form.get('room', None)
     if start and end and room:
-        room = Room.query.filter_by(id=int(room)).first()
+        room = db_session.query(Room).filter_by(id=int(room)).first()
         if not room:
             return error('Invalid room number')
 
@@ -86,8 +86,8 @@ def edit_reservation():
 @app.route('/reservation/<int:reservation>/cancel', methods=['POST'])
 @login_required
 def cancel_reservation(reservation):
-    reservation = Reservation.objects.filter_by(id=reservation)
-    if reservation and (reservation.user_id == g.user.id or g.user.admin):
+    reservation = db_session.query(Reservation).filter_by(id=reservation).first()
+    if reservation and (reservation.user.id == g.user.id or g.user.admin):
         reservation.cancelled = True
         db_session.commit()
 
@@ -112,7 +112,7 @@ def index():
     if authenticated:
         template = 'reservations.html'
 
-    return render_template(template, rooms=Room.query.all())
+    return render_template(template, rooms=db_session.query(Room).all())
 
 if __name__ == '__main__':
     manager.run()

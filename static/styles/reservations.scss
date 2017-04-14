@@ -12,3 +12,12 @@ $indicator-color: #ff6f00;
         background-color: $indicator-color;
     }
 }
+
+.fc-content {
+    display: inline-block;
+}
+
+.cancel-reservation-icon {
+    float: right;
+    padding-top: 1px;
+}

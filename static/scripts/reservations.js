@@ -7,16 +7,40 @@ const CALENDAR_DAYS_INTO_FUTURE = 10,
     RESERVATION_TOAST_DURATION_SECONDS = 3000;
 
 $(document).ready(() => {
+    $('#cancel-reservation-modal').modal();
+
+    $('#cancel-reservation').click((event) => {
+        const reservation = $(event.target).data('reservation');
+        $.post({
+            url: `reservation/${reservation.id}/cancel`,
+            success: (response) => {
+                if (response.success) {
+                    Materialize.toast('Success! Your reservation was cancelled.', RESERVATION_TOAST_DURATION_SECONDS);
+                }
+                else {
+                    Materialize.toast(`Failed to cancel your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
+                }
+                app.csrfToken = response.csrf_token;
+            },
+            error: () => {
+                Materialize.toast('Failed to cancel your reservation.', RESERVATION_TOAST_DURATION_SECONDS);
+            },
+            complete: () => {
+                $(`.calendar[data-room-id="${reservation.room}"]`).fullCalendar('refetchEvents');
+            },
+        });
+    });
+
     $('.calendar').each((_i, calendar) => {
         const roomId = $(calendar).data('room-id');
         $(calendar).fullCalendar({
             defaultView: 'agendaWeek',
             allDaySlot: false,
             selectable: true,
+            // TODO: Can overlap with cancelled events (mainly for admin)
             eventOverlap: false,
             selectOverlap: false,
             // TODO: add editable
-            // TODO: add deletion
             header: {
                 left: 'today',
                 center: '',
@@ -36,7 +60,7 @@ $(document).ready(() => {
                                     event.color = 'green';
                                 }
                                 if (event.cancelled) {
-                                    event.color = 'lightgray';
+                                    event.color = 'gray';
                                 }
 
                                 return event;
@@ -77,6 +101,17 @@ $(document).ready(() => {
                 };
             },
             selectAllow: info => info.end.diff(info.start, 'hours') <= MAXIMUM_DURATION_HOURS || app.admin,
+            eventClick: (event) => {
+                if (event.user === app.userId || app.admin) {
+                    $('#cancel-reservation-modal').modal('open');
+                    $('#cancel-reservation-modal').find('#cancel-reservation').data('reservation', event);
+                }
+            },
+            eventRender: (event, element) => {
+                if (!event.cancelled && (event.user === app.userId || app.admin)) {
+                    $(element).append($('<i class="material-icons tiny cancel-reservation-icon">delete</i>'));
+                }
+            },
         });
     });
 });
