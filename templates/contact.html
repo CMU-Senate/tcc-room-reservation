@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %} | Contact Us{% endblock %}
+
+{% block main %}
+<div class="section">
+  <div class="container">
+    <h1 class="amber-text text-darken-4">Contact Us</h1>
+    <p class="flow-text">
+      We appreciate your help with suggestions for new features, reports of site issues, and more.
+      Issues filed on <a class="amber-text text-darken-3" href="https://github.com/sushain97/tcc-reservation-system" target="_blank">GitHub</a> will also be addressed.
+    </p>
+
+    <form class="row" method="post">
+      <div class="col s12">
+        <div class="input-field col m4 s12">
+          <input type="text" name="name" required>
+          <label for="name">Your Name</label>
+        </div>
+      </div>
+
+      <div class="col s12">
+        <div class="input-field col m4 s12">
+          <input type="email" name="email" required>
+          <label for="email">Your Email</label>
+        </div>
+      </div>
+
+      <div class="col s12">
+        <div class="input-field col m4 s12">
+          <textarea class="materialize-textarea" name="comments" required></textarea>
+          <label for="comments">Your Comments</label>
+        </div>
+      </div>
+
+      <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+      <div class="col s12">
+        <button type="submit" class="btn waves-effect waves-light red darken-4">Submit Feedback
+          <i class="material-icons right">send</i>
+        </button>
+      </div>
+    </form>
+
+  </div>
+</div>
+{% endblock %}

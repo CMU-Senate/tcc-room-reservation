@@ -44,18 +44,19 @@ class Reservation(db.Model):
     def validates_times(self, key, value):
         if key == 'end':
             start, end = self.start, value
+            now = datetime.datetime.now()
             duration = end - start
             admin = self.user_id in admins
             room = db_session.query(Room).filter_by(id=int(self.room_id)).first()
 
-            assert start > datetime.datetime.now(), 'Reservation must start in the future'
-            assert (start - datetime.datetime.now()) <= datetime.timedelta(days=10), 'Reservation must start in the next 10 days'
+            assert start > now, 'Reservation must start in the future'
+            assert (start - now) <= datetime.timedelta(days=10), 'Reservation must start in the next 10 days'
             assert end > start, 'Reservation must end after it starts'
             assert admin or datetime.timedelta(minutes=30) <= duration, 'Reservation must be at least 30 minutes'
             assert admin or duration <= datetime.timedelta(hours=3), 'Reservation must not be longer than 3 hours'
-            assert room.reservations.filter(Reservation.cancelled == False, Reservation.id != self.id).filter(
-                    ((Reservation.start <= start) & (Reservation.end > start)) |
-                    ((Reservation.start >= start) & (Reservation.end <= end)) |
-                    ((Reservation.start < end) & (Reservation.end >= end))
-                ).count() == 0, 'Reservation must not overlap with another'
+            assert room.reservations.filter(not Reservation.cancelled, Reservation.id != self.id).filter( # noqa: E712
+                ((Reservation.start <= start) & (Reservation.end > start)) |
+                ((Reservation.start >= start) & (Reservation.end <= end)) |
+                ((Reservation.start < end) & (Reservation.end >= end))
+            ).count() == 0, 'Reservation must not overlap with another'
         return value

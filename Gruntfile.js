@@ -5,7 +5,7 @@
 const
     scripts = ['base.js', 'reservations.js'],
     styles = ['base.scss', 'index.scss', 'reservations.scss'],
-    templates = ['base.html', 'index.html', 'reservations.html'];
+    templates = ['base.html', 'index.html', 'reservations.html', 'contact.html'];
 
 module.exports = function (grunt) {
     grunt.initConfig({

@@ -1,3 +1,3 @@
-body{display:flex;flex-direction:column;min-height:100vh}main{flex:1 0 auto}#code-icon{position:relative;top:2.5px}#license-container{margin-right:-140px}
+body{display:flex;flex-direction:column;min-height:100vh}main{flex:1 0 auto}#code-icon{position:relative;top:2.5px}#license-container{margin-right:-140px}.input-field input[type='text']:focus,.input-field input[type='email']:focus,.input-field input[type='url']:focus{border-bottom:1px solid #d50000;box-shadow:0 1px 0 0 #d50000}.input-field input[type='text']:focus+label,.input-field input[type='email']:focus+label,.input-field input[type='url']:focus+label{color:#d50000}.input-field textarea:focus{border-bottom:1px solid #d50000 !important;box-shadow:0 1px 0 0 #d50000 !important}.input-field textarea:focus+label{color:#d50000 !important}
 
 /*# sourceMappingURL=base.css.map */

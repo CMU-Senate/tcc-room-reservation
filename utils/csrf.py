@@ -9,8 +9,9 @@ def update_csrf_token():
 
 def check_csrf_token():
     if request.method == 'POST':
-        token = session.pop('csrf_token', None)
-        if not token or token != request.headers.get('X-CSRF-Token', None):
+        correct_token = session.pop('csrf_token', None)
+        received_token = request.form.get('csrfToken', None) or request.headers.get('X-CSRF-Token', None)
+        if not correct_token or correct_token != received_token:
             abort(403)
 
 def inject_csrf_token():
