@@ -58,7 +58,10 @@
         "consistent-this": "error",
         "curly": "error",
         "default-case": "error",
-        "dot-location": "error",
+        "dot-location": [
+            "error",
+            "property"
+        ],
         "dot-notation": "error",
         "eol-last": "error",
         "eqeqeq": "error",
@@ -154,7 +157,12 @@
         "no-lone-blocks": "error",
         "no-lonely-if": "error",
         "no-loop-func": "error",
-        "no-magic-numbers": "error",
+        "no-magic-numbers": [
+            "error",
+            {
+                "ignore": [-1, 0, 1]
+            }
+        ],
         "no-mixed-operators": "error",
         "no-mixed-requires": "error",
         "no-multi-assign": "error",

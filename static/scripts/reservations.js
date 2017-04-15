@@ -92,7 +92,7 @@ $(document).ready(() => {
             },
             validRange: function (now) {
                 return {
-                    start: now,
+                    start: now.clone().subtract(1, 'days'),
                     end: now.clone().add(CALENDAR_DAYS_INTO_FUTURE, 'days'),
                 };
             },
@@ -148,6 +148,9 @@ $(document).ready(() => {
                     $(element).append($('<i class="material-icons tiny cancel-reservation-icon">delete</i>'));
                     $(element).css('cursor', 'pointer');
                 }
+            },
+            viewRender: () => {
+                $('button', calendar).addClass('btn waves-effect waves-light red darken-4');
             },
         });
     });
