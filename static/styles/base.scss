@@ -19,6 +19,12 @@ main {
     margin-right: -140px;
 }
 
+#logo {
+    height: 2.1rem;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
 .input-field {
     input {
         &[type='text'], &[type='email'], &[type='url'] {
