@@ -26,13 +26,11 @@ def minify_html(response):
     return response
 
 def inject_anlytics_tracking_id():
-    if 'GOOGLE_ANALYTICS_TRACKING_ID' in app.config:
-        return dict(google_analytics_tracking_id=app.config['GOOGLE_ANALYTICS_TRACKING_ID'])
-    else:
-        return {}
+    tracking_id = app.config['config'].get('DEFAULT', 'GOOGLE_ANALYTICS_TRACKING_ID')
+    return {'google_analytics_tracking_id': tracking_id} if tracking_id else {}
 
 def inject_version():
-    return dict(version=version)
+    return {'version': version}
 
 def inject_filters():
     return {

@@ -54,8 +54,6 @@ environment.append_path(str(cwd / 'bower_components'))
 
 version = subprocess.check_output(['git', 'describe', '--tags'], cwd=cwd).decode(sys.stdout.encoding).strip()
 
-app.config['GOOGLE_ANALYTICS_TRACKING_ID'] = config['GOOGLE_ANALYTICS_TRACKING_ID']
-
 app.config['SECRET_KEY'] = config['SECRET_KEY']
 app.config['SESSION_PROTECTION'] = 'strong'
 app.config['SOCIAL_AUTH_LOGIN_URL'] = '/login'
