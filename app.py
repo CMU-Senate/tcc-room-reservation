@@ -6,10 +6,12 @@ import textwrap
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+import requests
+
 from setup import app, login_manager, db_session, manager
 from models import Room, Reservation
 from schemas import reservation_schema, reservations_schema
-from utils import minify_html, inject_anlytics_tracking_id, inject_version, inject_filters, success, error
+from utils import minify_html, inject_anlytics_tracking_id, inject_recaptcha_key, inject_version, inject_filters, success, error
 from utils.csrf import check_csrf_token, inject_csrf_token
 from utils.users import load_user, global_user, inject_user
 
@@ -25,6 +27,7 @@ app.context_processor(inject_user)
 
 app.after_request(minify_html)
 app.context_processor(inject_anlytics_tracking_id)
+app.context_processor(inject_recaptcha_key)
 app.context_processor(inject_version)
 app.context_processor(inject_filters)
 
@@ -120,6 +123,17 @@ def contact():
     if request.method == 'GET':
         return render_template('contact.html')
     else:
+        recaptcha_response = request.form.get('g-recaptcha-response', None)
+        if recaptcha_response:
+            if not requests.post('https://www.google.com/recaptcha/api/siteverify', data={
+                'secret': app.config['config']['DEFAULT']['RECAPTCHA_SECRET'],
+                'response': recaptcha_response,
+                'remoteip': request.remote_addr
+            }).json()['success']:
+                abort(403)
+        else:
+            abort(403)
+
         name = request.form.get('name')
         email = request.form.get('email')
         comments = request.form.get('comments')

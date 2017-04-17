@@ -35,6 +35,15 @@
 
       <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
 
+      {% if recaptcha_site_key %}
+      <div class="col s12">
+          <div class="input-field">
+              <div class="g-recaptcha" data-sitekey="{{ recaptcha_site_key }}"></div>
+              <br>
+          </div>
+      </div>
+      {% endif %}
+
       <div class="col s12">
         <button type="submit" class="btn waves-effect waves-light red darken-4">Submit Feedback
           <i class="material-icons right">send</i>
@@ -44,4 +53,10 @@
 
   </div>
 </div>
+{% endblock %}
+
+{% block js %}
+{% if recaptcha_site_key %}
+<script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+{% endif %}
 {% endblock %}

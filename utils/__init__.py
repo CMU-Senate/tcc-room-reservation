@@ -29,6 +29,10 @@ def inject_anlytics_tracking_id():
     tracking_id = app.config['config'].get('DEFAULT', 'GOOGLE_ANALYTICS_TRACKING_ID')
     return {'google_analytics_tracking_id': tracking_id} if tracking_id else {}
 
+def inject_recaptcha_key():
+    recaptcha_key = app.config['config'].get('DEFAULT', 'RECAPTCHA_SITE_KEY')
+    return {'recaptcha_site_key': recaptcha_key} if recaptcha_key else {}
+
 def inject_version():
     return {'version': version}
 
