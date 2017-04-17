@@ -49,7 +49,6 @@ def get_reservation(reservation):
 @app.route('/reservation/add', methods=['POST'])
 @login_required
 def add_reservation():
-    # TODO: send email
     start, end = request.form.get('start', None), request.form.get('end', None)
     room = request.form.get('room', None)
     if start and end and room:
@@ -77,7 +76,6 @@ def add_reservation():
 @app.route('/reservation/<int:reservation>/edit', methods=['POST'])
 @login_required
 def edit_reservation(reservation):
-    # TODO: send email
     start, end = request.form.get('start', None), request.form.get('end', None)
     if start and end and reservation:
         reservation = db_session.query(Reservation).filter_by(id=reservation).first()
@@ -100,7 +98,6 @@ def edit_reservation(reservation):
 @app.route('/reservation/<int:reservation>/cancel', methods=['POST'])
 @login_required
 def cancel_reservation(reservation):
-    # TODO: send email
     reservation = db_session.query(Reservation).filter_by(id=reservation).first()
     if reservation and (reservation.user.id == g.user.id or g.user.admin):
         reservation.cancelled = True
