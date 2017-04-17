@@ -3,6 +3,7 @@ from .csrf import update_csrf_token
 
 from flask import jsonify
 from htmlmin.minify import html_minify
+from webassets.filter import get_filter
 
 def success():
     return jsonify({
@@ -32,3 +33,9 @@ def inject_anlytics_tracking_id():
 
 def inject_version():
     return dict(version=version)
+
+def inject_filters():
+    return {
+        'babel': get_filter('babel', presets='babili,env', binary='node_modules/babel-cli/bin/babel.js'),
+        'sass': get_filter('sass', as_output=True, style='compressed', binary='node_modules/node-sass/bin/node-sass')
+    }

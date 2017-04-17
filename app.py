@@ -9,7 +9,7 @@ from email.mime.multipart import MIMEMultipart
 from setup import app, login_manager, db_session, manager
 from models import Room, Reservation
 from schemas import reservation_schema, reservations_schema
-from utils import minify_html, inject_anlytics_tracking_id, inject_version, success, error
+from utils import minify_html, inject_anlytics_tracking_id, inject_version, inject_filters, success, error
 from utils.csrf import check_csrf_token, inject_csrf_token
 from utils.users import load_user, global_user, inject_user
 
@@ -26,6 +26,7 @@ app.context_processor(inject_user)
 app.after_request(minify_html)
 app.context_processor(inject_anlytics_tracking_id)
 app.context_processor(inject_version)
+app.context_processor(inject_filters)
 
 @app.route('/reservations/<int:room>')
 @login_required
