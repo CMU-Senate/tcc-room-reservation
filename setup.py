@@ -15,6 +15,7 @@ from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_assets import Environment
 
 app = Flask(__name__)
 
@@ -26,6 +27,7 @@ app.config['config'] = config
 config = config['DEFAULT']
 
 app.config['DEBUG'] = config.getboolean('DEBUG')
+app.config['ASSETS_DEBUG'] = app.config['DEBUG']
 app.config['SQLALCHEMY_DATABASE_URI'] = config['DB_PATH']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -44,6 +46,9 @@ manager.add_command('shell', Shell(make_context=lambda: {
 manager.add_command('init', Init())
 
 Bower(app)
+environment = Environment(app)
+environment.append_path('static')
+environment.append_path('bower_components')
 
 version = subprocess.check_output(['git', 'describe', '--tags'], cwd=cwd).decode(sys.stdout.encoding).strip()
 

@@ -43,8 +43,14 @@
 {% endblock %}
 
 {% block css %}
-<link type="text/css" rel="stylesheet" href="{{ url_for('bower.static', filename='fullcalendar/dist/fullcalendar.min.css') }}">
-<link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles/css/reservations.css') }}">
+{% assets filters=sass, output='gen/_reservations.css', 'styles/reservations.scss' %}
+    {% assets output='gen/reservations.css',
+        'fullcalendar/dist/fullcalendar.min.css',
+        'gen/_reservations.css'
+    %}
+        <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endassets %}
 {% endblock %}
 
 {% block js %}
@@ -52,7 +58,13 @@
   app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
   app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
 </script>
-<script type="text/javascript" src="{{ url_for('bower.static', filename='moment/min/moment.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('bower.static', filename='fullcalendar/dist/fullcalendar.min.js') }}"></script>
-<script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/reservations.js') }}"></script>
+{% assets filters=babel, output='gen/_reservations.js', 'scripts/reservations.js' %}
+    {% assets filters='rjsmin', output='gen/reservations.js',
+        'moment/min/moment.min.js',
+        'fullcalendar/dist/fullcalendar.min.js',
+        'gen/_reservations.js'
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endassets %}
 {% endblock %}

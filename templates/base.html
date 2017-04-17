@@ -33,8 +33,14 @@
     <meta name="theme-color" content="#ffffff">
 
     <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
-    <link type="text/css" rel="stylesheet" href="{{ url_for('bower.static', filename='materialize/bin/materialize.css') }}" media="screen, projection">
-    <link type="text/css" rel="stylesheet" href="{{ url_for('static', filename='styles/css/base.css') }}">
+    {% assets filters=sass, output='gen/_base.css', 'styles/base.scss' %}
+        {% assets output='gen/base.css',
+            'materialize/bin/materialize.css',
+            'gen/_base.css'
+        %}
+            <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+        {% endassets %}
+    {% endassets %}
     {% block css %}{% endblock %}
     {% if google_analytics_tracking_id %}
     <script>
@@ -109,9 +115,15 @@
       </div>
     </footer>
 
-    <script type="text/javascript" src="{{ url_for('bower.static', filename='jquery/dist/jquery.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('bower.static', filename='materialize/bin/materialize.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/base.js') }}"></script>
+    {% assets filters=babel, output='gen/_base.js', 'scripts/base.js' %}
+        {% assets output='gen/base.js',
+            'jquery/dist/jquery.min.js',
+            'materialize/bin/materialize.js',
+            'gen/_base.js'
+        %}
+            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+    {% endassets %}
     <script type="text/javascript">
       var app = {
           userId: '{{ user.id }}',

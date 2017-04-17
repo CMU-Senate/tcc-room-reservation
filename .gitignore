@@ -4,9 +4,10 @@ app.db
 # Node
 node_modules/
 
-# Source maps
-static/scripts/dist/*.map
-static/styles/css/*.map
+# Generated assets
+static/.webassets-cache/
+static/gen/
+static/webassets-external/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
