@@ -8,9 +8,7 @@ from flask_login import UserMixin
 from sqlalchemy.sql import func
 from sqlalchemy.orm import validates
 
-admins = [
-    'scherivi'
-]
+admins = app.config['config']['DEFAULT']['ADMINS'].split(' ')
 
 class User(db.Model, UserMixin):
     id = db.Column(db.String(8), primary_key=True) # Andrew ID
