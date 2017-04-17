@@ -73,8 +73,11 @@ class Reservation(db.Model):
             now = datetime.datetime.now()
             duration = end - start
 
-            week_start = start - datetime.timedelta(days=start.weekday())
+            week_start = start.date() - datetime.timedelta(days=start.weekday())
             week_end = week_start + datetime.timedelta(days=7)
+
+            day_start = start.date()
+            day_end = day_start + datetime.timedelta(days=1)
 
             admin = self.user_id in admins
             room = db_session.query(Room).filter_by(id=int(self.room_id)).first()
@@ -90,6 +93,9 @@ class Reservation(db.Model):
 
             week_reservations = user_reservations.filter((Reservation.start >= week_start) & (Reservation.start <= week_end)).all()
             week_reservation_duration = sum(map(operator.methodcaller('duration'), week_reservations), datetime.timedelta())
+
+            day_reservations = user_reservations.filter((Reservation.start >= day_start) & (Reservation.start <= day_end)).all()
+            day_reservation_duration = sum(map(operator.methodcaller('duration'), day_reservations), datetime.timedelta())
 
             assert start > now, \
                 'Reservation must start in the future'
@@ -111,4 +117,6 @@ class Reservation(db.Model):
                 'Reservation must not overlap with another'
             assert admin or duration + week_reservation_duration <= datetime.timedelta(hours=config('MAX_WEEK_HOURS')), \
                 'Reservations must not exceed %d hours per week' % config('MAX_WEEK_HOURS')
+            assert admin or duration + day_reservation_duration <= datetime.timedelta(hours=config('MAX_DAY_HOURS')), \
+                'Reservations must not exceed %d hours per day' % config('MAX_DAY_HOURS')
         return value
