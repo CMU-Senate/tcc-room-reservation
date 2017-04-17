@@ -81,7 +81,11 @@ class Reservation(db.Model):
             admin = self.user_id in admins
             room = db_session.query(Room).filter_by(id=int(self.room_id)).first()
             config = functools.partial(app.config['config'].getint, 'SCHEDULING')
-            user_reservations = room.reservations.filter_by(cancelled=False, user_id=self.user_id)
+            user_reservations = room.reservations.filter(
+                (Reservation.id != self.id) &
+                (Reservation.cancelled == False) & # noqa: E712 (SQLAlchemy requires it)
+                (Reservation.user_id == self.user_id)
+            )
 
             contiguous_reservations = Reservation.contiguous_before(user_reservations, start) + Reservation.contiguous_after(user_reservations, end)
             contiguous_duration = sum(map(operator.methodcaller('duration'), contiguous_reservations), datetime.timedelta())
