@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import configparser
+import os
 
 from init import Init
 
@@ -17,8 +18,10 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
 
+cwd = os.path.dirname(os.path.realpath(__file__))
+
 config = configparser.ConfigParser()
-config.read('settings.cfg')
+config.read(os.path.join(cwd, 'settings.cfg'))
 app.config['config'] = config
 config = config['DEFAULT']
 
@@ -42,7 +45,7 @@ manager.add_command('init', Init())
 
 Bower(app)
 
-version = subprocess.check_output(['git', 'describe', '--tags']).decode(sys.stdout.encoding).strip()
+version = subprocess.check_output(['git', 'describe', '--tags'], cwd=cwd).decode(sys.stdout.encoding).strip()
 
 app.config['GOOGLE_ANALYTICS_TRACKING_ID'] = config['GOOGLE_ANALYTICS_TRACKING_ID']
 
