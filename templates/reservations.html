@@ -8,7 +8,7 @@
     <div class="row center">
       <ul class="tabs tabs-fixed-width">
         {% for room in rooms %}
-          <li class="tab col s3"><a href="#room-{{ room.id }}" class="amber-text text-darken-4">{{ room.name }}</a></li>
+          <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
         {% endfor %}
       </ul>
 
@@ -29,14 +29,14 @@
 </div>
 
 <div id="cancel-reservation-modal" class="modal">
-    <div class="modal-content">
-        <h4>Cancel Reservation</h4>
-        <p>Do you wish to cancel your reservation? This action is irreversible.</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
-        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
-    </div>
+  <div class="modal-content">
+    <h4>Cancel Reservation</h4>
+      <p>Do you wish to cancel your reservation? This action is irreversible.</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
+    <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
+  </div>
 </div>
 {% endblock %}
 

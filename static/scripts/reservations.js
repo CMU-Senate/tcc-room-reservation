@@ -4,6 +4,11 @@
 
 const RESERVATION_TOAST_DURATION_SECONDS = 3000;
 
+// https://www.cmu.edu/marcom/brand-standards/web-standards.html#colors
+const CANCELLED_RESERVATION_COLOR = '#666',
+    MY_RESERVATION_COLOR = '#085',
+    OTHER_RESERVATION_COLOR = '#247';
+
 $(document).ready(() => {
     $('#cancel-reservation-modal').modal();
 
@@ -51,12 +56,14 @@ $(document).ready(() => {
                     success: (events) => {
                         callback(events.map(
                             (event) => {
+                                event.color = OTHER_RESERVATION_COLOR;
+
                                 event.editable = !event.cancelled;
                                 if (event.user === app.userId) {
-                                    event.color = 'green';
+                                    event.color = MY_RESERVATION_COLOR;
                                 }
                                 if (event.cancelled) {
-                                    event.color = 'gray';
+                                    event.color = CANCELLED_RESERVATION_COLOR;
                                 }
                                 if (app.admin) {
                                     event.title = event.user;
