@@ -15,12 +15,14 @@ from social_flask_sqlalchemy.models import init_social
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
+app = Flask(__name__)
+
 config = configparser.ConfigParser()
 config.read('settings.cfg')
+app.config['config'] = config
 config = config['DEFAULT']
 
-app = Flask(__name__)
-app.config['DEBUG'] = True
+app.config['DEBUG'] = config.getboolean('DEBUG')
 app.config['SQLALCHEMY_DATABASE_URI'] = config['DB_PATH']
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 

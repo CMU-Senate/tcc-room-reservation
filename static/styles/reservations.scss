@@ -91,6 +91,7 @@ $button-text-color: #fff;
 
 .tabs {
     margin-bottom: 1.25em;
+    overflow: hidden;
 
     .indicator {
         background-color: $indicator-color;

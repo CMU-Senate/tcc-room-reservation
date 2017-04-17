@@ -46,6 +46,10 @@
 {% endblock %}
 
 {% block js %}
+<script type="text/javascript">
+  app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
+  app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
+</script>
 <script type="text/javascript" src="{{ url_for('bower.static', filename='moment/min/moment.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('bower.static', filename='fullcalendar/dist/fullcalendar.min.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='scripts/dist/reservations.js') }}"></script>

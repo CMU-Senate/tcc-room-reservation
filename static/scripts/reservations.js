@@ -2,9 +2,7 @@
 
 /* global app */
 
-const CALENDAR_DAYS_INTO_FUTURE = 10,
-    MAXIMUM_DURATION_HOURS = 3,
-    RESERVATION_TOAST_DURATION_SECONDS = 3000;
+const RESERVATION_TOAST_DURATION_SECONDS = 3000;
 
 $(document).ready(() => {
     $('#cancel-reservation-modal').modal();
@@ -93,10 +91,11 @@ $(document).ready(() => {
             validRange: function (now) {
                 return {
                     start: now.clone().subtract(1, 'days'),
-                    end: now.clone().add(CALENDAR_DAYS_INTO_FUTURE, 'days'),
+                    end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
                 };
             },
-            selectAllow: info => info.end.diff(info.start, 'hours') <= MAXIMUM_DURATION_HOURS || app.admin,
+            selectAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
+            eventAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
             eventClick: (event) => {
                 if (!event.cancelled && (event.user === app.userId || app.admin)) {
                     $('#cancel-reservation-modal').modal('open');

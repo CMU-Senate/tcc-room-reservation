@@ -69,6 +69,7 @@ def add_reservation():
             db_session.commit()
             return success()
         except AssertionError as e:
+            db_session.rollback()
             return error(str(e))
     else:
         return error('Missing required inputs')
@@ -91,6 +92,7 @@ def edit_reservation(reservation):
             db_session.commit()
             return success()
         except AssertionError as e:
+            db_session.rollback()
             return error(str(e))
     else:
         return error('Missing required inputs')
@@ -165,7 +167,7 @@ def index():
     if authenticated:
         template = 'reservations.html'
 
-    return render_template(template, rooms=db_session.query(Room).all())
+    return render_template(template, rooms=db_session.query(Room).all(), config=app.config['config'])
 
 if __name__ == '__main__':
     manager.run()

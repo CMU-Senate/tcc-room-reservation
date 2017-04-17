@@ -1,6 +1,8 @@
 import datetime
+import functools
+import operator
 
-from setup import db, db_session, config
+from setup import app, db, db_session
 
 from flask_login import UserMixin
 from sqlalchemy.sql import func
@@ -22,8 +24,11 @@ class User(db.Model, UserMixin):
         self.username = self.id
         self.admin = kwargs.get('admin', self.id in admins)
 
+    def email(self, template='%s@andrew.cmu.edu'):
+        return template % id
+
     def __repr__(self):
-        return 'User <%r>' % self.id
+        return '<User: %s>' % self.id
 
 class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -31,6 +36,9 @@ class Room(db.Model):
     description = db.Column(db.String(500))
     reservable = db.Column(db.Boolean)
     reservations = db.relationship('Reservation', backref='room', lazy='dynamic')
+
+    def __repr__(self):
+        return '<Room: %s>' % self.name
 
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -40,6 +48,26 @@ class Reservation(db.Model):
     end = db.Column(db.DateTime)
     cancelled = db.Column(db.Boolean, default=False)
 
+    def duration(self):
+        return self.end - self.start
+
+    def __repr__(self):
+        return '<Reservation: %s by %s from %s-%s>' % (self.room, self.user, self.start, self.end)
+
+    @staticmethod
+    def contiguous_before(reservations, start):
+        reservation_before = reservations.filter(Reservation.end == start).first()
+        if reservation_before:
+            return [reservation_before] + Reservation.contiguous_before(reservations, reservation_before.start)
+        return []
+
+    @staticmethod
+    def contiguous_after(reservations, end):
+        reservation_after = reservations.filter(Reservation.start == end).first()
+        if reservation_after:
+            return [reservation_after] + Reservation.contiguous_after(reservations, reservation_after.end)
+        return []
+
     @validates('user_id', 'room_id', 'start', 'end')
     def validates_times(self, key, value):
         if key == 'end':
@@ -47,28 +75,38 @@ class Reservation(db.Model):
             now = datetime.datetime.now()
             duration = end - start
 
+            week_start = start - datetime.timedelta(days=start.weekday())
+            week_end = week_start + datetime.timedelta(days=7)
+
             admin = self.user_id in admins
             room = db_session.query(Room).filter_by(id=int(self.room_id)).first()
-            user_reservations = room.reservation.filter(cancelled=False, user_id=self.user_id)
-            config = config['SCHEDULING']
+            config = functools.partial(app.config['config'].getint, 'SCHEDULING')
+            user_reservations = room.reservations.filter_by(cancelled=False, user_id=self.user_id)
+
+            contiguous_reservations = Reservation.contiguous_before(user_reservations, start) + Reservation.contiguous_after(user_reservations, end)
+            contiguous_duration = sum(map(operator.methodcaller('duration'), contiguous_reservations), datetime.timedelta())
+
+            week_reservations = user_reservations.filter((Reservation.start >= week_start) & (Reservation.start <= week_end)).all()
+            week_reservation_duration = sum(map(operator.methodcaller('duration'), week_reservations), datetime.timedelta())
 
             assert start > now, \
                 'Reservation must start in the future'
-            assert (start - now) <= datetime.timedelta(days=config['MAX_DAYS_IN_FUTURE']), \
-                'Reservation must start in the next %d days' % config['MAX_DAYS_IN_FUTURE']
+            assert (start - now) <= datetime.timedelta(days=config('MAX_DAYS_IN_FUTURE')), \
+                'Reservation must start in the next %d days' % config('MAX_DAYS_IN_FUTURE')
             assert end > start, \
                 'Reservation must end after it starts'
-            assert admin or datetime.timedelta(minutes=config['MINIMUM_DURATION_MINUTES']) <= duration, \
-                'Reservation must be at least %d minutes' % config['MINIMUM_DURATION_MINUTES']
-            assert admin or duration <= datetime.timedelta(hours=config['MAX_CONTIGUOUS_DURATION_HOURS']), \
-                'Reservation must not be longer than %d hours' % config['MAX_CONTIGUOUS_DURATION_HOURS']
-            # TODO: this condition should take into account contiguous reservations
-            # TODO: this condition isn't actually stopping overlaps
-            assert room.reservations.filter(not Reservation.cancelled, Reservation.id != self.id).filter( # noqa: E712
+            assert admin or datetime.timedelta(minutes=config('MINIMUM_DURATION_MINUTES')) <= duration, \
+                'Reservation must be at least %d minutes' % config('MINIMUM_DURATION_MINUTES')
+            assert admin or duration <= datetime.timedelta(hours=config('MAX_CONTIGUOUS_DURATION_HOURS')), \
+                'Reservation must not be longer than %d hours' % config('MAX_CONTIGUOUS_DURATION_HOURS')
+            assert admin or duration + contiguous_duration <= datetime.timedelta(hours=config('MAX_CONTIGUOUS_DURATION_HOURS')), \
+                'Reservations must not be longer than %d contiguous hours' % config('MAX_CONTIGUOUS_DURATION_HOURS')
+            assert room.reservations.filter(Reservation.cancelled == False, Reservation.id != self.id).filter( # noqa: E712 (SQLAlchemy requires it)
                 ((Reservation.start <= start) & (Reservation.end > start)) |
                 ((Reservation.start >= start) & (Reservation.end <= end)) |
                 ((Reservation.start < end) & (Reservation.end >= end))
             ).count() == 0, \
                 'Reservation must not overlap with another'
-            # TODO: maximum per week
+            assert admin or duration + week_reservation_duration <= datetime.timedelta(hours=config('MAX_WEEK_HOURS')), \
+                'Reservations must not exceed %d hours per week' % config('MAX_WEEK_HOURS')
         return value
