@@ -17,15 +17,15 @@
         {% if room.description %}
           <p class="flow-text">{{ room.description }}</p>
         {% endif %}
+
         {% if room.reservable %}
           <div class="calendar" data-room-id="{{ room.id }}"></div>
+          <div id="help-text">Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.</div>
         {% else %}
           <h5>This room is currently not reservable.</h5>
         {% endif %}
       </div>
       {% endfor %}
-
-      <div id="help-text">Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.</div>
     </div>
   </div>
 </div>
