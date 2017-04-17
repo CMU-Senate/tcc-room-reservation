@@ -82,6 +82,8 @@ def edit_reservation(reservation):
         reservation = db_session.query(Reservation).filter_by(id=reservation).first()
         if not reservation:
             return error('Invalid reservation')
+        if not g.user.admin or reservation.user_id != g.user.id:
+            return error('Unauthorized to edit that reservation')
 
         start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
 

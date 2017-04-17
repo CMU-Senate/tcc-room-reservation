@@ -58,7 +58,7 @@ $(document).ready(() => {
                             (event) => {
                                 event.color = OTHER_RESERVATION_COLOR;
 
-                                event.editable = !event.cancelled;
+                                event.editable = !event.cancelled && (app.admin || event.user === app.userId);
                                 if (event.user === app.userId) {
                                     event.color = MY_RESERVATION_COLOR;
                                 }
