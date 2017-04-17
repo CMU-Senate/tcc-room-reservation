@@ -2,6 +2,7 @@ import subprocess
 import sys
 import configparser
 import os
+from pathlib import Path
 
 from init import Init
 
@@ -19,10 +20,11 @@ from flask_assets import Environment
 
 app = Flask(__name__)
 
-cwd = os.path.dirname(os.path.realpath(__file__))
+cwd = Path(os.path.dirname(os.path.realpath(__file__)))
+os.chdir(str(cwd))
 
 config = configparser.ConfigParser()
-config.read(os.path.join(cwd, 'settings.cfg'))
+config.read(str(cwd / 'settings.cfg'))
 app.config['config'] = config
 config = config['DEFAULT']
 
@@ -47,8 +49,8 @@ manager.add_command('init', Init())
 
 Bower(app)
 environment = Environment(app)
-environment.append_path('static')
-environment.append_path('bower_components')
+environment.append_path(str(cwd / 'static'))
+environment.append_path(str(cwd / 'bower_components'))
 
 version = subprocess.check_output(['git', 'describe', '--tags'], cwd=cwd).decode(sys.stdout.encoding).strip()
 
