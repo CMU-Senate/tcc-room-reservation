@@ -39,6 +39,17 @@ main {
         }
     }
 
+    [type='checkbox'].filled-in {
+        &:checked {
+            & + label {
+                &::after {
+                    background-color: $red;
+                    border-color: $red;
+                }
+            }
+        }
+    }
+
     textarea {
         &:focus {
             // sass-lint:disable-block no-important

@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %} | Admin{% endblock %}
+
+{% block main %}
+<div class="section">
+    <div class="container">
+        <div class="row center">
+            <ul class="tabs tabs-fixed-width">
+                {% for room in rooms %}
+                <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
+                {% endfor %}
+            </ul>
+
+            {% for room in rooms %}
+            <div id="room-{{ room.id }}">
+                <form class="row" method="post">
+                    <input type="hidden" name="id" value="{{ room.id }}">
+
+                    <div class="input-field col m3 s6">
+                        <input type="text" name="name" value="{{ room.name }}" required>
+                        <label for="name" >Name</label>
+                    </div>
+
+                    <div class="input-field col m5 s6">
+                        <input type="text" name="description" id="description{{ room.id }}"
+                            data-length="500" value="{% if room.description %} {{ room.description }} {% endif %}">
+                        <label for="description{{ room.id }}">Description</label>
+                    </div>
+
+                    <div class="input-field col m1 s6">
+                        <input type="checkbox" name="reservable" id="reservable{{ room.id }}"
+                            class="filled-in" {{ 'checked' if room.reservable else '' }}>
+                        <label for="reservable{{ room.id }}">Reservable</label>
+                    </div>
+
+                    <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+                    <div class="col m3 s12">
+                        <button type="submit" class="btn waves-effect waves-light red darken-4">Save
+                            <i class="material-icons right">save</i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+{% assets filters=sass, output='gen/admin.css', 'styles/admin.scss' %}
+    <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}

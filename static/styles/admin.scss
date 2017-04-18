@@ -1,0 +1,11 @@
+$indicator-color: #b71c1c;
+
+.tabs {
+    font-weight: 500;
+    margin-bottom: 1.25em;
+    overflow: hidden;
+
+    .indicator {
+        background-color: $indicator-color;
+    }
+}

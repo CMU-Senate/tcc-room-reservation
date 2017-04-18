@@ -117,6 +117,30 @@ def cancel_reservation(reservation):
     db_session.commit()
     return success()
 
+@app.route('/admin', methods=['GET', 'POST'])
+@login_required
+def admin():
+    if not g.user.admin:
+        return abort(403)
+
+    if request.method == 'GET':
+        return render_template('admin.html', rooms=db_session.query(Room).all())
+    else:
+        room_id = request.form.get('id', None)
+        if not room_id:
+            return abort(400)
+
+        room = db_session.query(Room).filter_by(id=room_id).first()
+        if not room:
+            return abort(400)
+
+        room.name = request.form.get('name', '')
+        room.description = request.form.get('description', '')
+        room.reservable = bool(request.form.get('reservable'))
+        db_session.commit()
+
+        return redirect('/admin')
+
 @app.route('/logout')
 def logout():
     logout_user()
