@@ -24,7 +24,7 @@
 
                     <div class="input-field col m5 s6">
                         <input type="text" name="description" id="description{{ room.id }}"
-                            data-length="500" value="{% if room.description %} {{ room.description }} {% endif %}">
+                            data-length="500" value="{{ room.description if room.description else '' }}">
                         <label for="description{{ room.id }}">Description</label>
                     </div>
 
