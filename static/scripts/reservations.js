@@ -165,6 +165,10 @@ $(document).ready(() => {
             },
             viewRender: () => {
                 $('button', calendar).addClass('btn waves-effect waves-light red darken-4');
+                $('.fc-center', calendar).append(
+                    $('<div id="help-text"></div>')
+                        .text('Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.')
+                );
             },
         });
     });
