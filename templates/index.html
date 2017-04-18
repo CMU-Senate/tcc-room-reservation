@@ -2,18 +2,18 @@
 
 {% block main %}
 <div class="section">
-  <div class="container">
-    <h1 class="center red-text text-darken-4">TCC Room Reservation System</h1>
-    <div class="row center">
-      <h4 class="col s12 light" id="title">
-        Book the Tartan Collaborative Commons' Glass Room
-      </h4>
+    <div class="container">
+        <h1 class="center red-text text-darken-4">TCC Room Reservation System</h1>
+        <div class="row center">
+            <h4 class="col s12 light" id="title">
+                Book the Tartan Collaborative Commons' Glass Room
+            </h4>
 
-      <a class="btn btn-large waves-effect red darken-4" href="{{ url_for('social.auth', backend='google-oauth2') }}?keep=1">
-        <i class="material-icons left">person</i> Login
-      </a>
+            <a class="btn btn-large waves-effect red darken-4" href="{{ url_for('social.auth', backend='google-oauth2') }}?keep=1">
+                <i class="material-icons left">person</i> Login
+            </a>
+        </div>
     </div>
-  </div>
 </div>
 {% endblock %}
 

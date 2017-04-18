@@ -4,41 +4,41 @@
 
 {% block main %}
 <div class="section">
-  <div class="container">
-    <div class="row center">
-      <ul class="tabs tabs-fixed-width">
-        {% for room in rooms %}
-          <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
-        {% endfor %}
-      </ul>
+    <div class="container">
+        <div class="row center">
+            <ul class="tabs tabs-fixed-width">
+                {% for room in rooms %}
+                    <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
+                {% endfor %}
+            </ul>
 
-      {% for room in rooms %}
-      <div id="room-{{ room.id }}">
-        {% if room.description %}
-          <p class="flow-text">{{ room.description }}</p>
-        {% endif %}
+            {% for room in rooms %}
+            <div id="room-{{ room.id }}">
+                {% if room.description %}
+                    <p class="flow-text">{{ room.description }}</p>
+                {% endif %}
 
-        {% if room.reservable %}
-          <div class="calendar" data-room-id="{{ room.id }}"></div>
-          <div id="help-text">Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.</div>
-        {% else %}
-          <h5>This room is currently not reservable.</h5>
-        {% endif %}
-      </div>
-      {% endfor %}
+                {% if room.reservable %}
+                    <div class="calendar" data-room-id="{{ room.id }}"></div>
+                    <div id="help-text">Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.</div>
+                {% else %}
+                    <h5>This room is currently not reservable.</h5>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
 </div>
 
 <div id="cancel-reservation-modal" class="modal">
-  <div class="modal-content">
-    <h4>Cancel Reservation</h4>
-      <p>Do you wish to cancel your reservation? This action is irreversible.</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
-    <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
-  </div>
+    <div class="modal-content">
+        <h4>Cancel Reservation</h4>
+        <p>Do you wish to cancel your reservation? This action is irreversible.</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
+        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
+    </div>
 </div>
 {% endblock %}
 
@@ -55,8 +55,8 @@
 
 {% block js %}
 <script type="text/javascript">
-  app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
-  app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
+    app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
+    app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
 </script>
 {% assets filters=babel, output='gen/_reservations.js', 'scripts/reservations.js' %}
     {% assets filters='rjsmin', output='gen/reservations.js',
