@@ -18,8 +18,8 @@
                     <input type="hidden" name="id" value="{{ room.id }}">
 
                     <div class="input-field col m3 s6">
-                        <input type="text" name="name" value="{{ room.name }}" required>
-                        <label for="name" >Name</label>
+                        <input type="text" name="name" value="{{ room.name }}" id="name{{ room.id }}" required>
+                        <label for="name{{ room.id }}" >Name</label>
                     </div>
 
                     <div class="input-field col m5 s6">
