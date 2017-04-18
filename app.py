@@ -84,8 +84,10 @@ def edit_reservation(reservation):
         reservation = db_session.query(Reservation).filter_by(id=reservation).first()
         if not reservation:
             return error('Invalid reservation')
-        if not g.user.admin and (reservation.user_id != g.user.id):
+        if not g.user.admin and reservation.user != g.user:
             return error('Unauthorized to edit that reservation')
+        if reservation.start <= datetime.datetime.now():
+            return error('Cannot edit reservation starting in the past')
 
         start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
 
@@ -104,13 +106,16 @@ def edit_reservation(reservation):
 @login_required
 def cancel_reservation(reservation):
     reservation = db_session.query(Reservation).filter_by(id=reservation).first()
-    if reservation and (reservation.user.id == g.user.id or g.user.admin):
-        reservation.cancelled = True
-        db_session.commit()
+    if not reservation:
+        return error('Invalid reservation')
+    if reservation.start <= datetime.datetime.now():
+        return error('Cannot edit reservation starting in the past')
+    if not g.user.admin and reservation.user != g.user:
+        return error('Unauthorized to cancel that reservation')
 
-        return success()
-    else:
-        return error('Unauthorized to cancel that reservation' if reservation else 'Invalid reservation')
+    reservation.cancelled = True
+    db_session.commit()
+    return success()
 
 @app.route('/logout')
 def logout():
