@@ -52,7 +52,7 @@ environment = Environment(app)
 environment.append_path(str(cwd / 'static'))
 environment.append_path(str(cwd / 'bower_components'))
 
-version = subprocess.check_output(['git', 'describe', '--tags'], cwd=cwd).decode(sys.stdout.encoding).strip()
+version = subprocess.check_output(['git', 'describe', '--tags'], cwd=str(cwd)).decode(sys.stdout.encoding).strip()
 
 app.config['SECRET_KEY'] = config['SECRET_KEY']
 app.config['SESSION_PROTECTION'] = 'strong'
