@@ -17,6 +17,10 @@ $button-text-color: #fff;
             z-index: 10;
         }
 
+        .fc-resizer {
+            z-index: 15;
+        }
+
         .cancel-reservation-icon {
             bottom: 0;
             float: right;
