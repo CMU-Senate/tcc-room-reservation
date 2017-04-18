@@ -65,8 +65,12 @@ $(document).ready(() => {
                                 if (event.cancelled) {
                                     event.color = CANCELLED_RESERVATION_COLOR;
                                 }
-                                if (app.admin) {
+
+                                if (app.admin || event.user === app.userId) {
                                     event.title = event.user;
+                                }
+                                else {
+                                    event.title = 'reserved';
                                 }
 
                                 return event;
