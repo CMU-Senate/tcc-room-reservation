@@ -155,7 +155,11 @@ $(document).ready(() => {
             },
             eventRender: (event, element) => {
                 if (!event.cancelled && (event.user === app.userId || app.admin)) {
-                    $(element).append($('<i class="material-icons tiny cancel-reservation-icon">delete</i>'));
+                    $(element).append(
+                        $('<i class="material-icons tiny cancel-reservation-icon">delete</i>')
+                            .css('background-color', $(element).css('background-color'))
+                    );
+                    $(element).attr('title', 'Click to cancel your reservation.');
                     $(element).css('cursor', 'pointer');
                 }
             },

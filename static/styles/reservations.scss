@@ -11,6 +11,22 @@ $button-text-color: #fff;
         }
     }
 
+    .fc-event {
+        .fc-bg {
+            opacity: .1;
+            z-index: 10;
+        }
+
+        .cancel-reservation-icon {
+            bottom: 0;
+            float: right;
+            font-size: .8rem;
+            position: absolute;
+            right: 0;
+            z-index: 5;
+        }
+    }
+
     .fc-content, .fc-title {
         display: inline-block;
         font-size: 1em;
@@ -97,13 +113,6 @@ $button-text-color: #fff;
     .indicator {
         background-color: $indicator-color;
     }
-}
-
-.cancel-reservation-icon {
-    bottom: 1px;
-    float: right;
-    position: absolute;
-    right: 0;
 }
 
 #help-text {
