@@ -174,5 +174,16 @@ $(document).ready(() => {
                 }
             },
         });
+
+        $('.fc-widget-content', calendar).hover(() => {
+            const row = $(event.currentTarget);
+            if (!row.html()) {
+                $('.fc-day', calendar).each((i, day) => {
+                    row.append($(`<td class="temp-cell" style="width: ${$(day).width() + 1}px"></td>`));
+                });
+            }
+        }, (event) => {
+            $(event.currentTarget).children('.temp-cell').remove();
+        });
     });
 });
