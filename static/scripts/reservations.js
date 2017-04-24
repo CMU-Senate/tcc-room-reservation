@@ -99,12 +99,10 @@ $(document).ready(() => {
                     complete: () => $(calendar).fullCalendar('refetchEvents'),
                 });
             },
-            validRange: function (now) {
-                return {
-                    start: now.clone().subtract(1, 'days'),
-                    end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
-                };
-            },
+            validRange: now => ({
+                start: now.clone().subtract(1, 'days'),
+                end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
+            }),
             selectAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
             eventAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
             eventClick: (event) => {
