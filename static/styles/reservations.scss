@@ -2,6 +2,14 @@ $indicator-color: #b71c1c;
 $button-text-color: #fff;
 $cell-hover-color: #dedede;
 
+.calendar {
+    &.loading {
+        opacity: .75;
+        pointer-events: none;
+        transition: opacity .25s ease-in-out;
+    }
+}
+
 .fc {
     table tbody {
         font-size: .9em;
@@ -124,9 +132,27 @@ $cell-hover-color: #dedede;
     }
 }
 
+.loading-indicator {
+    display: none;
+
+    &.loading {
+        display: block;
+    }
+
+    .preloader-wrapper {
+        position: absolute;
+        top: 50%;
+        z-index: 100;
+    }
+
+    .spinner-red-only {
+        border-color: $indicator-color;
+    }
+}
+
 .tabs {
     font-weight: 500;
-    margin-bottom: 1.25em;
+    margin-bottom: 1.5em;
     overflow: hidden;
 
     .indicator {

@@ -9,6 +9,21 @@ const CANCELLED_RESERVATION_COLOR = '#666',
     MY_RESERVATION_COLOR = '#085',
     OTHER_RESERVATION_COLOR = '#247';
 
+
+function startLoading(calendar) {
+    $(calendar)
+        .addClass('loading')
+        .siblings('.loading-indicator')
+            .addClass('loading');
+}
+
+function endLoading(calendar) {
+    $(calendar)
+        .removeClass('loading')
+        .siblings('.loading-indicator')
+            .removeClass('loading');
+}
+
 $(document).ready(() => {
     $('#cancel-reservation-modal').modal();
 
@@ -47,6 +62,7 @@ $(document).ready(() => {
                 right: 'prev, next',
             },
             events: (start, end, _timezone, callback) => {
+                startLoading(calendar);
                 $.get({
                     url: `/reservations/${roomId}`,
                     data: {
@@ -80,6 +96,7 @@ $(document).ready(() => {
                 });
             },
             select: (start, end) => {
+                startLoading(calendar);
                 $.post({
                     url: '/reservation/add',
                     data: {
@@ -112,6 +129,7 @@ $(document).ready(() => {
                 }
             },
             eventDrop: (event) => {
+                startLoading(calendar);
                 $.post({
                     url: `reservation/${event.id}/edit`,
                     data: {
@@ -132,6 +150,7 @@ $(document).ready(() => {
                 });
             },
             eventResize: (event) => {
+                startLoading(calendar);
                 $.post({
                     url: `reservation/${event.id}/edit`,
                     data: {
@@ -161,6 +180,7 @@ $(document).ready(() => {
                     $(element).css('cursor', 'pointer');
                 }
             },
+            eventAfterAllRender: () => endLoading(calendar),
             viewRender: () => {
                 $('button', calendar).addClass('btn waves-effect waves-light red darken-4');
                 if ($('.fc-center #help-text', calendar).length === 0) {

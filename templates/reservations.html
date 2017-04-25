@@ -13,13 +13,28 @@
             </ul>
 
             {% for room in rooms %}
-            <div id="room-{{ room.id }}">
+            <div id="room-{{ room.id }}" class="room">
                 {% if room.description %}
                     <p class="flow-text">{{ room.description }}</p>
                 {% endif %}
 
                 {% if room.reservable %}
-                    <div class="calendar" data-room-id="{{ room.id }}"></div>
+                    <div class="calendar loading" data-room-id="{{ room.id }}"></div>
+                    <div class="loading-indicator loading">
+                        <div class="preloader-wrapper big active">
+                            <div class="spinner-layer spinner-red-only">
+                                <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
                 {% else %}
                     <h5>This room is currently not reservable.</h5>
                 {% endif %}
