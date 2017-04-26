@@ -23,6 +23,13 @@ function endLoading(calendar) {
             .removeClass('loading');
 }
 
+function allowedEvent(info) {
+    const startsInFuture = info.start.isAfter($.fullCalendar.moment().stripZone()),
+        validDuration = info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS;
+
+    return startsInFuture && (validDuration || app.admin);
+}
+
 function toast(message) {
     Materialize.toast(message, RESERVATION_TOAST_DURATION_SECONDS);
 }
@@ -124,8 +131,8 @@ function init() {
                 start: now.clone().subtract(1, 'days'),
                 end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
             }),
-            selectAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
-            eventAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
+            selectAllow: allowedEvent,
+            eventAllow: allowedEvent,
             eventClick: handleEventClick,
             eventDrop: (event) => {
                 startLoading(calendar);
@@ -190,7 +197,18 @@ function init() {
             const row = $(event.currentTarget);
             if (!row.html()) {
                 $('.fc-day', calendar).each((i, day) => {
-                    row.append($(`<td class="temp-cell" style="width: ${$(day).width() + 1}px"></td>`));
+                    let date = null;
+                    if ($(day).data('date')) {
+                        date = $.fullCalendar.moment(`${$(day).data('date')}T${row.parent('tr').data('time')}`).stripZone();
+                    }
+
+                    const cell = $(`<td class="temp-cell" style="width: ${$(day).width() + 1}px"></td>`);
+                    row.append(cell);
+                    cell.hover(() => {
+                        if (date !== null && date.isAfter($.fullCalendar.moment().stripZone())) {
+                            cell.addClass('highlighted');
+                        }
+                    }, () => cell.removeClass('highlighted'));
                 });
             }
         }, (event) => {

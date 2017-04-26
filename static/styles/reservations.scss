@@ -20,10 +20,6 @@ $cell-hover-color: #dedede;
         }
     }
 
-    .fc-slats {
-        cursor: pointer;
-    }
-
     .fc-event {
         .fc-bg {
             opacity: .1;
@@ -126,8 +122,9 @@ $cell-hover-color: #dedede;
         border-radius: 0;
         padding: 0 1px;
 
-        &:hover {
+        &.highlighted {
             background-color: $cell-hover-color;
+            cursor: pointer;
         }
     }
 
