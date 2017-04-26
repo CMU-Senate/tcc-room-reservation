@@ -193,7 +193,7 @@ function init() {
             },
         });
 
-        $('.fc-widget-content', calendar).hover(() => {
+        $('.fc-widget-content:not(.fc-axis)', calendar).hover(() => {
             const row = $(event.currentTarget);
             if (!row.html()) {
                 $('.fc-day', calendar).each((i, day) => {
@@ -202,7 +202,10 @@ function init() {
                         date = $.fullCalendar.moment(`${$(day).data('date')}T${row.parent('tr').data('time')}`).stripZone();
                     }
 
-                    const cell = $(`<td class="temp-cell" style="width: ${$(day).width() + 1}px"></td>`);
+                    const cell = $('<td class="temp-cell"></td>').css({
+                        width: $(day).width() + 1,
+                        height: $(row).height(),
+                    });
                     row.append(cell);
                     cell.hover(() => {
                         if (date !== null && date.isAfter($.fullCalendar.moment().stripZone())) {

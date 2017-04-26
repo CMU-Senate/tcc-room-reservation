@@ -77,7 +77,10 @@ $cell-hover-color: #dedede;
 
     .fc-widget-content {
         border-bottom: 0;
-        border-left-color: transparent;
+
+        &:first-of-type {
+            border-left-color: transparent;
+        }
     }
 
     .fc-slats .fc-widget-content {
