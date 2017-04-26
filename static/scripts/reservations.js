@@ -85,6 +85,7 @@ function init() {
             timeFormat: 'hh:mm A',
             contentHeight: 'auto',
             editable: true,
+            nowIndicator: true,
             header: {
                 left: 'today',
                 center: '',

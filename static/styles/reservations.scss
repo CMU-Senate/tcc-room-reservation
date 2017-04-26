@@ -130,6 +130,10 @@ $cell-hover-color: #dedede;
             background-color: $cell-hover-color;
         }
     }
+
+    .fc-now-indicator {
+        border-color: $indicator-color;
+    }
 }
 
 .loading-indicator {
