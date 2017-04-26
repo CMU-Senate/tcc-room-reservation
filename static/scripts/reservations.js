@@ -9,7 +9,6 @@ const CANCELLED_RESERVATION_COLOR = '#666',
     MY_RESERVATION_COLOR = '#085',
     OTHER_RESERVATION_COLOR = '#247';
 
-
 function startLoading(calendar) {
     $(calendar)
         .addClass('loading')
@@ -24,25 +23,55 @@ function endLoading(calendar) {
             .removeClass('loading');
 }
 
-$(document).ready(() => {
-    $('#cancel-reservation-modal').modal();
+function toast(message) {
+    Materialize.toast(message, RESERVATION_TOAST_DURATION_SECONDS);
+}
 
-    $('#cancel-reservation').click((event) => {
-        const reservation = $(event.target).data('reservation');
-        $.post({
-            url: `reservation/${reservation.id}/cancel`,
-            success: (response) => {
-                if (response.success) {
-                    Materialize.toast('Success! Your reservation was cancelled.', RESERVATION_TOAST_DURATION_SECONDS);
-                }
-                else {
-                    Materialize.toast(`Failed to cancel your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
-                }
-            },
-            error: () => Materialize.toast('Failed to cancel your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
-            complete: () => $(`.calendar[data-room-id="${reservation.room}"]`).fullCalendar('refetchEvents'),
-        });
+function handleReservationCancel(event) {
+    const reservation = $(event.target).data('reservation');
+    $.post({
+        url: `reservation/${reservation.id}/cancel`,
+        success: response => toast(
+            response.success
+                ? 'Success! Your reservation was cancelled.'
+                : `Failed to cancel your reservation: ${response.error}.`
+        ),
+        error: () => toast('Failed to cancel your reservation.'),
+        complete: () => $(`.calendar[data-room-id="${reservation.room}"]`).fullCalendar('refetchEvents'),
     });
+}
+
+function handleEventClick(event) {
+    if (!event.cancelled && (event.user === app.userId || app.admin)) {
+        $('#cancel-reservation-modal').modal('open');
+        $('#cancel-reservation-modal').find('#cancel-reservation').data('reservation', event);
+    }
+}
+
+function prepareEvent(event) {
+    event.color = OTHER_RESERVATION_COLOR;
+
+    event.editable = !event.cancelled && (app.admin || event.user === app.userId);
+    if (event.user === app.userId) {
+        event.color = MY_RESERVATION_COLOR;
+    }
+    if (event.cancelled) {
+        event.color = CANCELLED_RESERVATION_COLOR;
+    }
+
+    if (app.admin || event.user === app.userId) {
+        event.title = event.user;
+    }
+    else {
+        event.title = 'reserved';
+    }
+
+    return event;
+}
+
+function init() {
+    $('#cancel-reservation-modal').modal();
+    $('#cancel-reservation').click(handleReservationCancel);
 
     $('.calendar').each((_i, calendar) => {
         const roomId = $(calendar).data('room-id');
@@ -69,30 +98,7 @@ $(document).ready(() => {
                         start: start.clone().startOf('week').unix(),
                         end: end.unix(),
                     },
-                    success: (events) => {
-                        callback(events.map(
-                            (event) => {
-                                event.color = OTHER_RESERVATION_COLOR;
-
-                                event.editable = !event.cancelled && (app.admin || event.user === app.userId);
-                                if (event.user === app.userId) {
-                                    event.color = MY_RESERVATION_COLOR;
-                                }
-                                if (event.cancelled) {
-                                    event.color = CANCELLED_RESERVATION_COLOR;
-                                }
-
-                                if (app.admin || event.user === app.userId) {
-                                    event.title = event.user;
-                                }
-                                else {
-                                    event.title = 'reserved';
-                                }
-
-                                return event;
-                            }
-                        ));
-                    },
+                    success: events => callback(events.map(prepareEvent)),
                 });
             },
             select: (start, end) => {
@@ -104,15 +110,12 @@ $(document).ready(() => {
                         start: start.unix(),
                         end: end.unix(),
                     },
-                    success: (response) => {
-                        if (response.success) {
-                            Materialize.toast('Success! Your reservation has been made.', RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                        else {
-                            Materialize.toast(`Failed to create a reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                    },
-                    error: () => Materialize.toast('Failed to create a reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    success: response => toast(
+                        response.success
+                            ? 'Success! Your reservation has been made.'
+                            : `Failed to create a reservation: ${response.error}.`
+                    ),
+                    error: () => toast('Failed to create a reservation.'),
                     complete: () => $(calendar).fullCalendar('refetchEvents'),
                 });
             },
@@ -122,12 +125,7 @@ $(document).ready(() => {
             }),
             selectAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
             eventAllow: info => info.end.diff(info.start, 'hours') <= app.MAXIMUM_DURATION_HOURS || app.admin,
-            eventClick: (event) => {
-                if (!event.cancelled && (event.user === app.userId || app.admin)) {
-                    $('#cancel-reservation-modal').modal('open');
-                    $('#cancel-reservation-modal').find('#cancel-reservation').data('reservation', event);
-                }
-            },
+            eventClick: handleEventClick,
             eventDrop: (event) => {
                 startLoading(calendar);
                 $.post({
@@ -137,15 +135,12 @@ $(document).ready(() => {
                         start: event.start.unix(),
                         end: event.end.unix(),
                     },
-                    success: (response) => {
-                        if (response.success) {
-                            Materialize.toast('Success! Your reservation was edited.', RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                        else {
-                            Materialize.toast(`Failed to edit your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                    },
-                    error: () => Materialize.toast('Failed to edit your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    success: response => toast(
+                        response.success
+                            ? 'Success! Your reservation was edited.'
+                            : `Failed to edit your reservation: ${response.error}.`
+                    ),
+                    error: () => toast('Failed to edit your reservation.'),
                     complete: () => $(`.calendar[data-room-id="${event.room}"]`).fullCalendar('refetchEvents'),
                 });
             },
@@ -158,15 +153,12 @@ $(document).ready(() => {
                         start: event.start.unix(),
                         end: event.end.unix(),
                     },
-                    success: (response) => {
-                        if (response.success) {
-                            Materialize.toast('Success! Your reservation was edited.', RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                        else {
-                            Materialize.toast(`Failed to edit your reservation: ${response.error}.`, RESERVATION_TOAST_DURATION_SECONDS);
-                        }
-                    },
-                    error: () => Materialize.toast('Failed to edit your reservation.', RESERVATION_TOAST_DURATION_SECONDS),
+                    success: response => toast(
+                        response.success
+                            ? 'Success! Your reservation was edited.'
+                            : `Failed to edit your reservation: ${response.error}.`
+                    ),
+                    error: () => toast('Failed to edit your reservation.'),
                     complete: () => $(`.calendar[data-room-id="${event.room}"]`).fullCalendar('refetchEvents'),
                 });
             },
@@ -204,4 +196,8 @@ $(document).ready(() => {
             $(event.currentTarget).children('.temp-cell').remove();
         });
     });
+}
+
+$(document).ready(() => {
+    init();
 });
