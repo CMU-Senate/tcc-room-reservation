@@ -86,7 +86,7 @@ function init() {
             defaultView: 'agendaWeek',
             allDaySlot: false,
             selectable: true,
-            eventOverlap: stillEvent => stillEvent.canceled,
+            eventOverlap: stillEvent => stillEvent.cancelled,
             selectOverlap: event => event.cancelled,
             eventOrder: '-cancelled',
             timeFormat: 'hh:mm A',
