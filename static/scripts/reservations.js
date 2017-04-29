@@ -58,8 +58,8 @@ function handleEventClick(event) {
 function prepareEvent(event) {
     event.color = OTHER_RESERVATION_COLOR;
 
-    const start = $.fullCalendar.moment(event.start).utc().stripZone();
-    const now = $.fullCalendar.moment().stripZone();
+    const now = $.fullCalendar.moment().stripZone(),
+        start = $.fullCalendar.moment(event.start).utc().stripZone();
 
     event.editable = !event.cancelled && start.isAfter(now) && (app.admin || event.user === app.userId);
 
@@ -214,8 +214,16 @@ function init() {
                     });
                     row.append(cell);
                     cell.hover(() => {
-                        if (date !== null && date.isAfter($.fullCalendar.moment().stripZone())) {
-                            cell.addClass('highlighted');
+                        if (date !== null) {
+                            const inFuture = date.isAfter($.fullCalendar.moment().stripZone()),
+                                overlappingEvents = $(calendar).fullCalendar(
+                                  'clientEvents',
+                                  x => !x.cancelled && date.isSameOrAfter(x.start) && date.isBefore(x.end)
+                                );
+
+                            if (inFuture && !overlappingEvents.length) {
+                                cell.addClass('highlighted');
+                            }
                         }
                     }, () => cell.removeClass('highlighted'));
                 });
