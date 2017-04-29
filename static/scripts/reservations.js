@@ -199,38 +199,39 @@ function init() {
             },
         });
 
-        $('.fc-widget-content:not(.fc-axis)', calendar).hover(() => {
-            const row = $(event.currentTarget);
-            if (!row.html()) {
-                $('.fc-day', calendar).each((i, day) => {
-                    let date = null;
-                    if ($(day).data('date')) {
-                        date = $.fullCalendar.moment(`${$(day).data('date')}T${row.parent('tr').data('time')}`).stripZone();
-                    }
-
-                    const cell = $('<td class="temp-cell"></td>').css({
-                        width: $(day).width() + 1,
-                        height: $(row).height(),
-                    });
-                    row.append(cell);
-                    cell.hover(() => {
-                        if (date !== null) {
-                            const inFuture = date.isAfter($.fullCalendar.moment().stripZone()),
-                                overlappingEvents = $(calendar).fullCalendar(
-                                  'clientEvents',
-                                  x => !x.cancelled && date.isSameOrAfter(x.start) && date.isBefore(x.end)
-                                );
-
-                            if (inFuture && !overlappingEvents.length) {
-                                cell.addClass('highlighted');
-                            }
+        $(calendar).on({
+            mouseenter: (event) => {
+                const row = $(event.currentTarget);
+                if (!row.html()) {
+                    $('.fc-day', calendar).each((i, day) => {
+                        let date = null;
+                        if ($(day).data('date')) {
+                            date = $.fullCalendar.moment(`${$(day).data('date')}T${row.parent('tr').data('time')}`).stripZone();
                         }
-                    }, () => cell.removeClass('highlighted'));
-                });
-            }
-        }, (event) => {
-            $(event.currentTarget).children('.temp-cell').remove();
-        });
+
+                        const cell = $('<td class="temp-cell"></td>').css({
+                            width: $(day).width() + 1,
+                            height: $(row).height(),
+                        });
+                        row.append(cell);
+                        cell.hover(() => {
+                            if (date !== null) {
+                                const inFuture = date.isAfter($.fullCalendar.moment().stripZone()),
+                                    overlappingEvents = $(calendar).fullCalendar(
+                                      'clientEvents',
+                                      x => !x.cancelled && date.isSameOrAfter(x.start) && date.isBefore(x.end)
+                                    );
+
+                                if (inFuture && !overlappingEvents.length) {
+                                    cell.addClass('highlighted');
+                                }
+                            }
+                        }, () => cell.removeClass('highlighted'));
+                    });
+                }
+            },
+            mouseleave: event => $(event.currentTarget).children('.temp-cell').remove(),
+        }, '.fc-widget-content:not(.fc-axis)');
     });
 }
 
