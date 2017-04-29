@@ -1,6 +1,7 @@
 $indicator-color: #b71c1c;
 $button-text-color: #fff;
 $cell-hover-color: #dedede;
+$past-background-color: #d7d7d7;
 
 .calendar {
     &.loading {
@@ -20,7 +21,16 @@ $cell-hover-color: #dedede;
         }
     }
 
+    .fc-past {
+        background-color: $past-background-color;
+        opacity: .3;
+    }
+
     .fc-event {
+        &.editable {
+            cursor: pointer;
+        }
+
         .fc-bg {
             opacity: .1;
             z-index: 10;

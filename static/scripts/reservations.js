@@ -49,7 +49,7 @@ function handleReservationCancel(event) {
 }
 
 function handleEventClick(event) {
-    if (!event.cancelled && (event.user === app.userId || app.admin)) {
+    if (event.editable && !event.cancelled && (event.user === app.userId || app.admin)) {
         $('#cancel-reservation-modal').modal('open');
         $('#cancel-reservation-modal').find('#cancel-reservation').data('reservation', event);
     }
@@ -58,7 +58,11 @@ function handleEventClick(event) {
 function prepareEvent(event) {
     event.color = OTHER_RESERVATION_COLOR;
 
-    event.editable = !event.cancelled && (app.admin || event.user === app.userId);
+    const start = $.fullCalendar.moment(event.start).utc().stripZone();
+    const now = $.fullCalendar.moment().stripZone();
+
+    event.editable = !event.cancelled && start.isAfter(now) && (app.admin || event.user === app.userId);
+
     if (event.user === app.userId) {
         event.color = MY_RESERVATION_COLOR;
     }
@@ -91,7 +95,6 @@ function init() {
             eventOrder: '-cancelled',
             timeFormat: 'hh:mm A',
             contentHeight: 'auto',
-            editable: true,
             nowIndicator: true,
             header: {
                 left: 'today',
@@ -128,7 +131,7 @@ function init() {
                 });
             },
             validRange: now => ({
-                start: now.clone().subtract(1, 'days'),
+                start: app.admin ? now.clone().startOf('week') : now.clone().startOf('day'),
                 end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
             }),
             selectAllow: allowedEvent,
@@ -171,13 +174,16 @@ function init() {
                 });
             },
             eventRender: (event, element) => {
-                if (!event.cancelled && (event.user === app.userId || app.admin)) {
-                    $(element).append(
-                        $('<i class="material-icons tiny cancel-reservation-icon">delete</i>')
-                            .css('background-color', $(element).css('background-color'))
-                    );
-                    $(element).attr('title', 'Click to cancel your reservation.');
-                    $(element).css('cursor', 'pointer');
+                if (event.editable) {
+                    $(element).addClass('editable');
+
+                    if (!event.cancelled && (event.user === app.userId || app.admin)) {
+                        $(element).append(
+                            $('<i class="material-icons tiny cancel-reservation-icon">delete</i>')
+                                .css('background-color', $(element).css('background-color'))
+                        );
+                        $(element).attr('title', 'Click to cancel your reservation.');
+                    }
                 }
             },
             eventAfterAllRender: () => endLoading(calendar),
