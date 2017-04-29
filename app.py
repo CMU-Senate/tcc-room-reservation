@@ -7,7 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from setup import app, login_manager, db_session, manager
-from models import Room, Reservation
+from models import User, Room, Reservation
 from schemas import reservation_schema, reservations_schema
 from utils import minify_html, inject_anlytics_tracking_id, inject_recaptcha_key, inject_version, inject_filters, success, error
 from utils.csrf import check_csrf_token, inject_csrf_token
@@ -15,7 +15,7 @@ from utils.users import load_user, global_user, inject_user
 
 import requests
 from flask import render_template, g, request, session, redirect, abort, flash
-from flask_login import logout_user, login_required
+from flask_login import login_user, logout_user, login_required
 
 login_manager.user_loader(load_user)
 app.before_request(global_user)
@@ -116,6 +116,26 @@ def cancel_reservation(reservation):
     reservation.cancelled = True
     db_session.commit()
     return success()
+
+@app.route('/login-as', methods=['POST'])
+@login_required
+def login_as():
+    if not g.user.admin:
+        return abort(403)
+
+    user_id = request.form.get('id')
+    if not user_id:
+        return abort(400)
+
+    user = db_session.query(User).filter_by(id=user_id).first()
+    if not user:
+        user = User(id=user_id)
+        db_session.add(user)
+        db_session.commit()
+
+    login_user(user)
+    flash('Logged in as %s.' % user.id)
+    return redirect('/')
 
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required

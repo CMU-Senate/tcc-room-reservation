@@ -5,7 +5,7 @@
 {% block main %}
 <div class="section">
     <div class="container">
-        <div class="row center">
+        <div class="row center" id="rooms">
             <ul class="tabs tabs-fixed-width">
                 {% for room in rooms %}
                 <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
@@ -45,6 +45,20 @@
             </div>
             {% endfor %}
         </div>
+
+        <form class="row" method="post" action="/login-as">
+            Login as&nbsp;
+            <div class="input-field inline">
+                <input id="id" type="text" name="id" maxlength="8">
+                <label for="id">Andrew ID</label>
+            </div>
+
+            <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+            <button type="submit" id="login-as" class="btn btn-sm waves-effect waves-light red darken-4">Login
+                <i class="material-icons right">done</i>
+            </button>
+        </form>
     </div>
 </div>
 {% endblock %}

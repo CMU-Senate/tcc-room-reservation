@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
     reservations = db.relationship('Reservation', backref='user', lazy='dynamic')
 
     def __init__(self, *args, **kwargs):
-        self.id = kwargs.get('id', kwargs.get('email').split('@')[0])
+        self.id = kwargs.get('id', kwargs.get('email', '').split('@')[0])
         self.username = self.id
         self.admin = kwargs.get('admin', self.id in admins)
 
