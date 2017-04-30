@@ -3,6 +3,7 @@
 import datetime
 import smtplib
 import textwrap
+import functools
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
@@ -30,15 +31,41 @@ app.context_processor(inject_recaptcha_key)
 app.context_processor(inject_version)
 app.context_processor(inject_filters)
 
+def start_end_required(handle_request):
+    @functools.wraps(handle_request)
+    def wrapper(*args, **kwargs):
+        start, end = request.values.get('start', None), request.values.get('end', None)
+
+        try:
+            start = datetime.datetime.utcfromtimestamp(int(start)) if start else None
+            end = datetime.datetime.utcfromtimestamp(int(end)) if end else None
+        except:
+            pass
+
+        if not start:
+            return error('Invalid start time')
+
+        if not end:
+            return error('Invalid end time')
+
+        return handle_request(*args, **kwargs, start=start, end=end)
+
+    return wrapper
+
 @app.route('/reservations/<int:room>')
 @login_required
-def get_reservations(room):
+@start_end_required
+def get_reservations(room, start=None, end=None):
     room = db_session.query(Room).filter_by(id=room).first()
     if room:
-        reservations = room.reservations.filter(Reservation.cancelled.in_([True, False] if g.user.admin else [False]))
+        reservations = room.reservations.filter(
+            Reservation.cancelled.in_([True, False] if g.user.admin else [False]) &
+            (Reservation.start >= start) &
+            (Reservation.end <= end)
+        )
         return reservations_schema.jsonify(reservations)
     else:
-        return abort(404)
+        return error('Invalid room')
 
 @app.route('/reservation/<int:reservation>')
 @login_required
@@ -51,56 +78,49 @@ def get_reservation(reservation):
 
 @app.route('/reservation/add', methods=['POST'])
 @login_required
-def add_reservation():
-    start, end = request.form.get('start', None), request.form.get('end', None)
+@start_end_required
+def add_reservation(start=None, end=None):
     room = request.form.get('room', None)
-    if start and end and room:
-        room = db_session.query(Room).filter_by(id=int(room)).first()
-        if not room:
-            return error('Invalid room')
+    if not room:
+        return error('Missing room')
 
-        start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
+    room = db_session.query(Room).filter_by(id=int(room)).first()
+    if not room:
+        return error('Invalid room')
 
-        try:
-            db_session.add(Reservation(
-                user_id=g.user.id,
-                room_id=room.id,
-                start=start,
-                end=end
-            ))
-            db_session.commit()
-            return success()
-        except AssertionError as e:
-            db_session.rollback()
-            return error(str(e))
-    else:
-        return error('Missing required inputs')
+    try:
+        db_session.add(Reservation(
+            user_id=g.user.id,
+            room_id=room.id,
+            start=start,
+            end=end
+        ))
+        db_session.commit()
+        return success()
+    except AssertionError as e:
+        db_session.rollback()
+        return error(str(e))
 
 @app.route('/reservation/<int:reservation>/edit', methods=['POST'])
 @login_required
-def edit_reservation(reservation):
-    start, end = request.form.get('start', None), request.form.get('end', None)
-    if start and end and reservation:
-        reservation = db_session.query(Reservation).filter_by(id=reservation).first()
-        if not reservation:
-            return error('Invalid reservation')
-        if not g.user.admin and reservation.user != g.user:
-            return error('Unauthorized to edit that reservation')
-        if reservation.start <= datetime.datetime.now():
-            return error('Cannot edit reservation starting in the past')
+@start_end_required
+def edit_reservation(reservation, start=None, end=None):
+    reservation = db_session.query(Reservation).filter_by(id=reservation).first()
+    if not reservation:
+        return error('Invalid reservation')
+    if not g.user.admin and reservation.user != g.user:
+        return error('Unauthorized to edit that reservation')
+    if reservation.start <= datetime.datetime.now():
+        return error('Cannot edit reservation starting in the past')
 
-        start, end = datetime.datetime.utcfromtimestamp(int(start)), datetime.datetime.utcfromtimestamp(int(end))
-
-        try:
-            reservation.start = start
-            reservation.end = end
-            db_session.commit()
-            return success()
-        except AssertionError as e:
-            db_session.rollback()
-            return error(str(e))
-    else:
-        return error('Missing required inputs')
+    try:
+        reservation.start = start
+        reservation.end = end
+        db_session.commit()
+        return success()
+    except AssertionError as e:
+        db_session.rollback()
+        return error(str(e))
 
 @app.route('/reservation/<int:reservation>/cancel', methods=['POST'])
 @login_required
