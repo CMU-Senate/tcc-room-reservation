@@ -131,7 +131,7 @@ function init() {
                 });
             },
             validRange: now => ({
-                start: app.admin ? now.clone().startOf('week') : now.clone().startOf('day'),
+                start: app.admin ? null : now.clone().startOf('day'),
                 end: now.clone().add(app.CALENDAR_DAYS_INTO_FUTURE, 'days'),
             }),
             selectAllow: allowedEvent,
