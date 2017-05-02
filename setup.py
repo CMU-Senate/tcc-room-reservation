@@ -7,7 +7,6 @@ from pathlib import Path
 from init import Init
 
 from flask import Flask
-from flask_bower import Bower
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask_script import Server, Manager, Shell
@@ -51,7 +50,6 @@ manager.add_command('shell', Shell(make_context=lambda: {
 manager.add_command('db', MigrateCommand)
 manager.add_command('init', Init())
 
-Bower(app)
 environment = Environment(app)
 environment.append_path(str(cwd / 'static'))
 environment.append_path(str(cwd / 'bower_components'))
