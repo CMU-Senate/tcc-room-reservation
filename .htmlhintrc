@@ -6,7 +6,7 @@
   "spec-char-escape": false,
   "id-unique": true,
   "src-not-empty": true,
-  "attr-no-duplication": true,
+  "attr-no-duplication": false,
   "alt-require": true,
   "doctype-html5": true,
   "style-disabled": true,

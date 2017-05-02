@@ -14,6 +14,7 @@ from flask_script import Server, Manager, Shell
 from flask_marshmallow import Marshmallow
 from social_flask.routes import social_auth
 from social_flask_sqlalchemy.models import init_social
+from flask_migrate import Migrate, MigrateCommand
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_assets import Environment
@@ -37,6 +38,8 @@ db = SQLAlchemy(app)
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 db_session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
 
+migrate = Migrate(app, db)
+
 ma = Marshmallow(app)
 
 manager = Manager(app)
@@ -45,6 +48,7 @@ manager.add_command('shell', Shell(make_context=lambda: {
     'app': app,
     'db_session': db_session
 }))
+manager.add_command('db', MigrateCommand)
 manager.add_command('init', Init())
 
 Bower(app)

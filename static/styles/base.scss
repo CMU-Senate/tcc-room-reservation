@@ -1,4 +1,5 @@
 $red: #d50000;
+$accent: #f44336;
 
 body {
     display: flex;
@@ -25,6 +26,10 @@ main {
     vertical-align: middle;
 }
 
+.dropdown-content li > span {
+    color: $accent;
+}
+
 .input-field {
     input {
         &[type='text'], &[type='email'], &[type='url'] {
@@ -39,12 +44,25 @@ main {
         }
     }
 
-    [type='checkbox'].filled-in {
-        &:checked {
-            & + label {
-                &::after {
-                    background-color: $red;
-                    border-color: $red;
+    [type='checkbox'] {
+        &.filled-in {
+            &:checked {
+                & + label {
+                    &::after {
+                        background-color: $red;
+                        border-color: $red;
+                    }
+                }
+            }
+        }
+
+        &:not(.filled-in) {
+            &:checked {
+                & + label {
+                    &::before {
+                        border-bottom: 2px solid $red;
+                        border-right: 2px solid $red;
+                    }
                 }
             }
         }

@@ -3,14 +3,17 @@
 import datetime
 import smtplib
 import textwrap
-import functools
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
 from setup import app, login_manager, db_session, manager
 from models import User, Room, Reservation
 from schemas import reservation_schema, reservations_schema
-from utils import minify_html, inject_anlytics_tracking_id, inject_recaptcha_key, inject_version, inject_filters, success, error
+from utils import (
+    minify_html, success, error,
+    start_end_required, admin_required,
+    inject_anlytics_tracking_id, inject_recaptcha_key, inject_version, inject_filters
+)
 from utils.csrf import check_csrf_token, inject_csrf_token
 from utils.users import load_user, global_user, inject_user
 
@@ -30,27 +33,6 @@ app.context_processor(inject_anlytics_tracking_id)
 app.context_processor(inject_recaptcha_key)
 app.context_processor(inject_version)
 app.context_processor(inject_filters)
-
-def start_end_required(handle_request):
-    @functools.wraps(handle_request)
-    def wrapper(*args, **kwargs):
-        start, end = request.values.get('start', None), request.values.get('end', None)
-
-        try:
-            start = datetime.datetime.utcfromtimestamp(int(start)) if start else None
-            end = datetime.datetime.utcfromtimestamp(int(end)) if end else None
-        except:
-            pass
-
-        if not start:
-            return error('Invalid start time')
-
-        if not end:
-            return error('Invalid end time')
-
-        return handle_request(*args, **kwargs, start=start, end=end)
-
-    return wrapper
 
 @app.route('/reservations/<int:room>')
 @login_required
@@ -137,34 +119,16 @@ def cancel_reservation(reservation):
     db_session.commit()
     return success()
 
-@app.route('/login-as', methods=['POST'])
-@login_required
-def login_as():
-    if not g.user.admin:
-        return abort(403)
-
-    user_id = request.form.get('id')
-    if not user_id:
-        return abort(400)
-
-    user = db_session.query(User).filter_by(id=user_id).first()
-    if not user:
-        user = User(id=user_id)
-        db_session.add(user)
-        db_session.commit()
-
-    login_user(user)
-    flash('Logged in as %s.' % user.id)
-    return redirect('/')
-
 @app.route('/admin', methods=['GET', 'POST'])
 @login_required
+@admin_required
 def admin():
-    if not g.user.admin:
-        return abort(403)
-
     if request.method == 'GET':
-        return render_template('admin.html', rooms=db_session.query(Room).all())
+        context = {
+            'rooms': db_session.query(Room).all(),
+            'users': db_session.query(User).all(),
+        }
+        return render_template('admin.html', **context)
     else:
         room_id = request.form.get('id', None)
         if not room_id:
@@ -180,6 +144,37 @@ def admin():
         db_session.commit()
 
         return redirect('/admin')
+
+@app.route('/admin/ban-users', methods=['POST'])
+@login_required
+@admin_required
+def ban_users():
+    users = set(request.form.getlist('banned-users'))
+    for user in db_session.query(User).all():
+        user.banned = user.id in users
+    db_session.commit()
+
+    flash('Updated list of banned users (%s users).' % len(users))
+    return redirect('/admin')
+
+@app.route('/admin/login-as', methods=['POST'])
+@login_required
+@admin_required
+def login_as():
+    user_id = request.form.get('id')
+    if not user_id:
+        return abort(400)
+
+    user = db_session.query(User).filter_by(id=user_id).first()
+    if not user:
+        user = User(id=user_id)
+        db_session.add(user)
+        db_session.commit()
+
+    logout_user()
+    login_user(user)
+    flash('Logged in as %s.' % user.id)
+    return redirect('/')
 
 @app.route('/logout')
 def logout():

@@ -10,8 +10,12 @@ $indicator-color: #b71c1c;
     }
 }
 
-#login-as {
+#banned-users-field {
+    width: 40%;
+}
+
+#login-as, #update-bans {
     display: inline-block;
     margin-left: 1rem;
-    margin-top: 1rem;
+    margin-top: .5rem;
 }

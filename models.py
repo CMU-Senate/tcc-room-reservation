@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.String(8), primary_key=True) # Andrew ID
     username = db.Column(db.String(100)) # required for Social Flask
     admin = db.Column(db.Boolean)
+    banned = db.Column(db.Boolean, default=False)
     last_login = db.Column(db.DateTime, default=func.now())
     reservations = db.relationship('Reservation', backref='user', lazy='dynamic')
 
@@ -21,6 +22,7 @@ class User(db.Model, UserMixin):
         self.id = kwargs.get('id', kwargs.get('email', '').split('@')[0])
         self.username = self.id
         self.admin = kwargs.get('admin', self.id in admins)
+        self.banned = kwargs.get('banned', False)
 
     def email(self, template='%s@andrew.cmu.edu'):
         return template % id

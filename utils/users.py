@@ -3,7 +3,8 @@ from schemas import reservation_schema, reservations_schema
 from models import User
 
 import flask_login
-from flask import g
+from flask_login import logout_user
+from flask import g, flash
 
 def inject_user():
     try:
@@ -13,6 +14,11 @@ def inject_user():
 
 def global_user():
     g.user = flask_login.current_user
+
+    if g.user and g.user.is_authenticated and g.user.banned:
+        flash('You have been banned. Please contact us if you would like to appeal this decision.')
+        logout_user()
+
     reservation_schema.context = {'user': g.user}
     reservations_schema.context = {'user': g.user}
 

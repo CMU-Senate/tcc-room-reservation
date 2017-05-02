@@ -46,7 +46,7 @@
             {% endfor %}
         </div>
 
-        <form class="row" method="post" action="/login-as">
+        <form class="row" method="post" action="/admin/login-as">
             Login as&nbsp;
             <div class="input-field inline">
                 <input id="id" type="text" name="id" maxlength="8">
@@ -56,7 +56,28 @@
             <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
 
             <button type="submit" id="login-as" class="btn btn-sm waves-effect waves-light red darken-4">Login
-                <i class="material-icons right">done</i>
+                <i class="material-icons right">supervisor_account</i>
+            </button>
+        </form>
+
+        <form class="row" method="post" action="/admin/ban-users">
+            Banned users&nbsp;
+            <div class="input-field inline" id="banned-users-field">
+                <select multiple name="banned-users" id="banned-users">
+                    <option value="" disabled>None</option>
+                    {% for user in users|sort(attribute='id') %}
+                        {% if not user.admin %}
+                            <option value="{{user.id}}" {% if user.banned %} selected {% endif %}>{{user.id}}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+                <label for="banned-users">Andrew ID(s)</label>
+            </div>
+
+            <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+            <button type="submit" id="update-bans" class="btn btn-sm waves-effect waves-light red darken-4">Update
+                <i class="material-icons right">check</i>
             </button>
         </form>
     </div>
@@ -66,5 +87,11 @@
 {% block css %}
 {% assets filters=sass, output='gen/admin.css', 'styles/admin.scss' %}
     <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+{% endassets %}
+{% endblock %}
+
+{% block js %}
+{% assets filters=babel, output='gen/_admin.js', 'scripts/admin.js' %}
+    <script type="text/javascript" src="{{ ASSET_URL }}"></script>
 {% endassets %}
 {% endblock %}
