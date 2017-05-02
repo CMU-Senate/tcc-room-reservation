@@ -121,4 +121,6 @@ class Reservation(db.Model):
                 'Reservations must not exceed %d hours per week' % config('MAX_WEEK_HOURS')
             assert admin or duration + day_reservation_duration <= datetime.timedelta(hours=config('MAX_DAY_HOURS')), \
                 'Reservations must not exceed %d hours per day' % config('MAX_DAY_HOURS')
+            assert len(day_reservations) + 1 <= config('MAX_DAY_RESERVATIONS'), \
+                'Reservations per day may not exceed %d reservations' % config('MAX_DAY_RESERVATIONS')
         return value
