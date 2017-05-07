@@ -58,7 +58,10 @@
 <div id="restrictions-modal" class="modal">
     <div class="modal-content">
         <h4>Reservation Restrictions</h4>
-        <p>In order to prevent abuse of the system and promote equitable usage, we impose the following restrictions on reservations.</p>
+        <p class="flow-text">
+            In order to prevent abuse of the system and promote equitable usage,
+            we impose the following restrictions on reservations.
+        </p>
         <ul class="collection">
             <li class="collection-item">
                 Reservations can be made up to {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }} days in advance.
