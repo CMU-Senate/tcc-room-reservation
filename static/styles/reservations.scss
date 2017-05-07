@@ -10,7 +10,7 @@ $table-border: #ddd;
 // sass-lint:disable class-name-format
 .dataTable {
     th {
-        border-bottom-color: $table-border !important; //sass-lintt:disable-line no-important
+        border-bottom-color: $table-border !important; //sass-lint:disable-line no-important
     }
 }
 
