@@ -54,6 +54,36 @@
         <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
     </div>
 </div>
+
+<div id="restrictions-modal" class="modal">
+    <div class="modal-content">
+        <h4>Reservation Restrictions</h4>
+        <p>In order to prevent abuse of the system and promote equitable usage, we impose the following restrictions on reservations.</p>
+        <ul class="collection">
+            <li class="collection-item">
+                Reservations can be made up to {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }} days in advance.
+            </li>
+            <li class="collection-item">
+                Your reservations may not exceed {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }} contiguous hours.
+            </li>
+            <li class="collection-item">
+                Your reservations may not exceed {{ config.getint('SCHEDULING', 'MAX_DAY_HOURS') }} hours per day.
+            </li>
+            <li class="collection-item">
+                Your reservations may not exceed {{ config.getint('SCHEDULING', 'MAX_WEEK_HOURS') }} hours per week.
+            </li>
+            <li class="collection-item">
+                Your reservations must be at least {{ config.getint('SCHEDULING', 'MINIMUM_DURATION_MINUTES') }} minutes long.
+            </li>
+            <li class="collection-item">
+                You may make up to {{ config.getint('SCHEDULING', 'MAX_DAY_RESERVATIONS') }} reservations per day.
+            </li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Close</a>
+    </div>
+  </div>
 {% endblock %}
 
 {% block css %}

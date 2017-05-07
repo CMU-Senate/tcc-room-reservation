@@ -84,6 +84,8 @@ function init() {
     $('#cancel-reservation-modal').modal();
     $('#cancel-reservation').click(handleReservationCancel);
 
+    $('#restrictions-modal').modal();
+
     $('.calendar').each((_i, calendar) => {
         const roomId = $(calendar).data('room-id');
         $(calendar).fullCalendar({
@@ -192,7 +194,9 @@ function init() {
                 if ($('.fc-center #help-text', calendar).length === 0) {
                     $('.fc-center', calendar).append(
                         $(`<div id="help-text">
-                            Click and drag to create your reservation. Edit a reservation by resizing or dragging and dropping it.
+                            Click and drag to create your reservation.
+                            Edit a reservation by resizing or dragging and dropping it.
+                            <a href="#restrictions-modal">Some restrictions apply.</a>
                            </div>`)
                     );
                 }
