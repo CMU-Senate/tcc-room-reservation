@@ -1,57 +1,38 @@
 {% extends 'base.html' %}
 
-{% block title %}| Reservations{% endblock %}
-
 {% block main %}
 <div class="section">
     <div class="container">
-        <div class="row center">
-            <ul class="tabs tabs-fixed-width">
-                {% for room in rooms %}
-                    <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
+        <table id="reservations" class="row-border hover stripe centered">
+            <thead>
+                <tr>
+                    {% if user.admin %} <th>User</th> {% endif %}
+                    <th>Room</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reservation in reservations %}
+                    <tr>
+                        {% if user.admin %} <td>{{ reservation.user.id }}</td> {% endif %}
+                        <td>{{ reservation.room.name }}</td>
+                        <td data-sort="{{ reservation.start.timestamp() }}">
+                            {{ reservation.start.strftime('%B %-d, %Y, %I:%M %p') }}
+                        </td>
+                        <td data-sort="{{ reservation.end.timestamp() }}">
+                            {{ reservation.end.strftime('%B %-d, %Y, %I:%M %p') }}
+                        </td>
+                        <td data-sort="{{ (reservation.end - reservation.start).total_seconds() }}">
+                            {{ ':'.join(('%s' % (reservation.end - reservation.start)).split(':')[:-1]) }}
+                        </td>
+                        <td>{{ 'Cancelled' if reservation.cancelled else ('Past' if reservation.start < now else 'Future') }}</td>
+                    </tr>
                 {% endfor %}
-            </ul>
-
-            {% for room in rooms %}
-            <div id="room-{{ room.id }}" class="room">
-                {% if room.description %}
-                    <p class="flow-text">{{ room.description }}</p>
-                {% endif %}
-
-                {% if room.reservable %}
-                    <div class="calendar loading" data-room-id="{{ room.id }}"></div>
-                    <div class="loading-indicator loading">
-                        <div class="preloader-wrapper big active">
-                            <div class="spinner-layer spinner-red-only">
-                                <div class="circle-clipper left">
-                                <div class="circle"></div>
-                            </div>
-                            <div class="gap-patch">
-                                <div class="circle"></div>
-                            </div>
-                            <div class="circle-clipper right">
-                                <div class="circle"></div>
-                            </div>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <h5>This room is currently not reservable.</h5>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-<div id="cancel-reservation-modal" class="modal">
-    <div class="modal-content">
-        <h4>Cancel Reservation</h4>
-        <p>Do you wish to cancel your reservation? This action is irreversible.</p>
-    </div>
-    <div class="modal-footer">
-        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
-        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
@@ -59,7 +40,7 @@
 {% block css %}
 {% assets filters=sass, output='gen/_reservations.css', 'styles/reservations.scss' %}
     {% assets output='gen/reservations.css',
-        'fullcalendar/dist/fullcalendar.min.css',
+        'datatables.net-dt/css/jquery.dataTables.min.css',
         'gen/_reservations.css'
     %}
         <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
@@ -68,14 +49,9 @@
 {% endblock %}
 
 {% block js %}
-<script type="text/javascript">
-    app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
-    app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
-</script>
 {% assets filters=babel, output='gen/_reservations.js', 'scripts/reservations.js' %}
     {% assets filters='rjsmin', output='gen/reservations.js',
-        'moment/min/moment.min.js',
-        'fullcalendar/dist/fullcalendar.min.js',
+        'datatables.net/js/jquery.dataTables.min.js',
         'gen/_reservations.js'
     %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>

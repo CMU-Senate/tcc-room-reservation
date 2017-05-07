@@ -77,17 +77,18 @@
             </ul>
 
             <ul class="right hide-on-med-and-down">
-                {% if user and user.admin %}<li><a href="/admin">Admin</a></li>{% endif %}
+                {% if user and user.admin %}<li data-endpoint="admin"><a href="{{ url_for('admin') }}">Admin</a></li>{% endif %}
                 {% if user %}
-                <!-- <li><a href="/reservations">Reservations</a></li> -->
-                    <li><a href="/logout">Logout ({{ user.id }})</a></li>
+                    <li data-endpoint="reservations"><a href="{{ url_for('reservations') }}">Reservations</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ user.id }})</a></li>
                 {% endif %}
             </ul>
 
             <ul id="nav-mobile" class="side-nav">
-                {% if user and user.admin %}<li><a href="/admin">Admin</a></li>{% endif %}
+                {% if user and user.admin %}<li data-endpoint="admin"><a href="{{ url_for('admin') }}">Admin</a></li>{% endif %}
                 {% if user %}
-                    <li><a href="/logout">Logout</a></li>
+                    <li data-endpoint="reservations"><a href="{{ url_for('reservations') }}">Reservations</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
                 {% endif %}
             </ul>
             <a href="#" data-activates="nav-mobile" class="button-collapse"><i class="material-icons">menu</i></a>
@@ -128,7 +129,8 @@
         var app = {
             userId: '{{ user.id }}',
             admin: {% if user and user.admin %} true {% else %} false {% endif %},
-            csrfToken: '{{ csrf_token }}'
+            csrfToken: '{{ csrf_token }}',
+            endpoint: '{{ request.url_rule.endpoint }}'
         };
         $(document).ready(function () {
             {% with messages = get_flashed_messages() %}
@@ -138,6 +140,8 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
+
+            $('li[data-endpoint=' + app.endpoint + ']').addClass('active');
         });
     </script>
     {% block js %}{% endblock %}

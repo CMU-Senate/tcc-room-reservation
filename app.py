@@ -20,6 +20,7 @@ from utils.users import load_user, global_user, inject_user
 import requests
 from flask import render_template, g, request, session, redirect, abort, flash
 from flask_login import login_user, logout_user, login_required
+from sqlalchemy.orm import joinedload
 
 login_manager.user_loader(load_user)
 app.before_request(global_user)
@@ -232,6 +233,16 @@ def contact():
         flash('Thank you for your feedback!')
         return redirect('/')
 
+@app.route('/reservations')
+@login_required
+def reservations():
+    reservations = db_session.query(Reservation).options(joinedload(Reservation.room))
+    if not g.user.admin:
+        reservations = reservations.filter_by(user=g.user)
+    reservations = reservations.all()
+
+    return render_template('reservations.html', reservations=reservations, now=datetime.datetime.now())
+
 @app.route('/')
 def index():
     authenticated = g.user and g.user.is_authenticated
@@ -242,7 +253,7 @@ def index():
 
     template = 'index.html'
     if authenticated:
-        template = 'reservations.html'
+        template = 'calendar.html'
 
     return render_template(template, rooms=db_session.query(Room).all(), config=app.config['config'])
 

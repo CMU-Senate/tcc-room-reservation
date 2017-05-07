@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}| Calendar{% endblock %}
+
+{% block main %}
+<div class="section">
+    <div class="container">
+        <div class="row center">
+            <ul class="tabs tabs-fixed-width">
+                {% for room in rooms %}
+                    <li class="tab col s3"><a href="#room-{{ room.id }}" class="red-text text-darken-4">{{ room.name }}</a></li>
+                {% endfor %}
+            </ul>
+
+            {% for room in rooms %}
+            <div id="room-{{ room.id }}" class="room">
+                {% if room.description %}
+                    <p class="flow-text">{{ room.description }}</p>
+                {% endif %}
+
+                {% if room.reservable %}
+                    <div class="calendar loading" data-room-id="{{ room.id }}"></div>
+                    <div class="loading-indicator loading">
+                        <div class="preloader-wrapper big active">
+                            <div class="spinner-layer spinner-red-only">
+                                <div class="circle-clipper left">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="gap-patch">
+                                <div class="circle"></div>
+                            </div>
+                            <div class="circle-clipper right">
+                                <div class="circle"></div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <h5>This room is currently not reservable.</h5>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<div id="cancel-reservation-modal" class="modal">
+    <div class="modal-content">
+        <h4>Cancel Reservation</h4>
+        <p>Do you wish to cancel your reservation? This action is irreversible.</p>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat">Keep Reservation</a>
+        <a href="#" class="modal-action modal-close waves-effect waves-light btn-flat" id="cancel-reservation">Cancel Reservation</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block css %}
+{% assets filters=sass, output='gen/_calendar.css', 'styles/calendar.scss' %}
+    {% assets output='gen/calendar.css',
+        'fullcalendar/dist/fullcalendar.min.css',
+        'gen/_calendar.css'
+    %}
+        <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
+    {% endassets %}
+{% endassets %}
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+    app.CALENDAR_DAYS_INTO_FUTURE = {{ config.getint('SCHEDULING', 'MAX_DAYS_IN_FUTURE') }};
+    app.MAXIMUM_DURATION_HOURS = {{ config.getint('SCHEDULING', 'MAX_CONTIGUOUS_DURATION_HOURS') }};
+</script>
+{% assets filters=babel, output='gen/_calendar.js', 'scripts/calendar.js' %}
+    {% assets filters='rjsmin', output='gen/calendar.js',
+        'moment/min/moment.min.js',
+        'fullcalendar/dist/fullcalendar.min.js',
+        'gen/_calendar.js'
+    %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+    {% endassets %}
+{% endassets %}
+{% endblock %}

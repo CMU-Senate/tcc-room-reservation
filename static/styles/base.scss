@@ -30,6 +30,17 @@ main {
     color: $accent;
 }
 
+input {
+    &[type='search'] {
+        &:focus {
+            &:not([readonly]) {
+                border-bottom: 1px solid $red;
+                box-shadow: 0 1px 0 0 $red;
+            }
+        }
+    }
+}
+
 .input-field {
     input {
         &[type='text'], &[type='email'], &[type='url'] {

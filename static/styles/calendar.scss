@@ -1,0 +1,179 @@
+$indicator-color: #b71c1c;
+$button-text-color: #fff;
+$cell-hover-color: #dedede;
+$past-background-color: #d7d7d7;
+
+.calendar {
+    &.loading {
+        opacity: .75;
+        pointer-events: none;
+        transition: opacity .25s ease-in-out;
+    }
+}
+
+.fc {
+    table tbody {
+        font-size: .9em;
+        line-height: 1.25;
+
+        tr {
+            height: .85em;
+        }
+    }
+
+    .fc-past {
+        background-color: $past-background-color;
+        opacity: .3;
+    }
+
+    .fc-event {
+        &.editable {
+            cursor: pointer;
+        }
+
+        .fc-bg {
+            opacity: .1;
+            z-index: 10;
+        }
+
+        .fc-resizer {
+            z-index: 15;
+        }
+
+        .cancel-reservation-icon {
+            bottom: 0;
+            float: right;
+            font-size: .8rem;
+            position: absolute;
+            right: 0;
+            z-index: 5;
+        }
+    }
+
+    .fc-content, .fc-title {
+        display: inline-block;
+        font-size: 1em;
+    }
+
+    .fc-axis.fc-time {
+        font-size: .85em;
+    }
+
+    .fc-time-grid .fc-slats td {
+        height: 1em;
+    }
+
+    .fc-time-grid-event .fc-time {
+        font-size: 1em;
+    }
+
+    .fc-time-grid-event.fc-short .fc-time {
+        span {
+            display: inline;
+            font-size: 1em;
+        }
+
+        &::before, &::after {
+            content: normal;
+        }
+    }
+
+    .fc-head-container {
+        border-left-color: transparent;
+        border-right: 0;
+        border-top: 0;
+        font-size: 1.25em;
+    }
+
+    .fc-widget-content {
+        border-bottom: 0;
+
+        &:first-of-type {
+            border-left-color: transparent;
+        }
+    }
+
+    .fc-slats .fc-widget-content {
+        border-right: 0;
+    }
+
+    button {
+        cursor: inherit;
+        font-size: inherit;
+        height: inherit;
+        margin: inherit;
+        padding: 0 2rem;
+        white-space: inherit;
+    }
+
+    .fc-right button {
+        padding: 0 1rem;
+    }
+
+    .fc-state-default {
+        background-color: inherit;
+        background-image: none;
+        border: 0;
+        border-color: inherit;
+        box-shadow: inherit;
+        color: $button-text-color;
+        text-shadow: inherit;
+
+        &.fc-corner-left {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+        }
+
+        &.fc-corner-right {
+            border-bottom-right-radius: 0;
+            border-top-right-radius: 0;
+        }
+    }
+
+    .temp-cell {
+        border: 0;
+        border-radius: 0;
+        padding: 0 1px;
+
+        &.highlighted {
+            background-color: $cell-hover-color;
+            cursor: pointer;
+        }
+    }
+
+    .fc-now-indicator {
+        border-color: $indicator-color;
+    }
+}
+
+.loading-indicator {
+    display: none;
+
+    &.loading {
+        display: block;
+    }
+
+    .preloader-wrapper {
+        position: absolute;
+        top: 50%;
+        z-index: 100;
+    }
+
+    .spinner-red-only {
+        border-color: $indicator-color;
+    }
+}
+
+.tabs {
+    font-weight: 500;
+    margin-bottom: 1.5em;
+    overflow: hidden;
+
+    .indicator {
+        background-color: $indicator-color;
+    }
+}
+
+#help-text {
+    margin-top: .5em;
+}

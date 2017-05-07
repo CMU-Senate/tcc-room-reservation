@@ -3,8 +3,8 @@
 'use strict';
 
 const
-    scripts = ['base.js', 'reservations.js', 'admin.js'],
-    templates = ['base.html', 'index.html', 'reservations.html', 'contact.html', 'admin.html'];
+    scripts = ['base.js', 'calendar.js', 'admin.js', 'reservations.js'],
+    templates = ['base.html', 'index.html', 'calendar.html', 'contact.html', 'admin.html', 'reservations.html'];
 
 module.exports = function (grunt) {
     grunt.initConfig({
