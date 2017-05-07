@@ -5,13 +5,15 @@ $table-border: #ddd;
 #reservations {
     border-bottom: 0;
     margin-bottom: 1rem;
-
-    th {
-        border-bottom-color: $table-border;
-    }
 }
 
 // sass-lint:disable class-name-format
+.dataTable {
+    th {
+        border-bottom-color: $table-border !important; //sass-lintt:disable-line no-important
+    }
+}
+
 .dataTables {
     &_filter {
         input {

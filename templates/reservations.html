@@ -41,6 +41,7 @@
 {% assets filters=sass, output='gen/_reservations.css', 'styles/reservations.scss' %}
     {% assets output='gen/reservations.css',
         'datatables.net-dt/css/jquery.dataTables.min.css',
+        'datatables.net-fixedheader-dt/css/fixedHeader.dataTables.min.css',
         'gen/_reservations.css'
     %}
         <link type="text/css" rel="stylesheet" href="{{ ASSET_URL }}">
@@ -52,6 +53,7 @@
 {% assets filters=babel, output='gen/_reservations.js', 'scripts/reservations.js' %}
     {% assets filters='rjsmin', output='gen/reservations.js',
         'datatables.net/js/jquery.dataTables.min.js',
+        'datatables.net-fixedheader/js/dataTables.fixedHeader.min.js',
         'gen/_reservations.js'
     %}
         <script type="text/javascript" src="{{ ASSET_URL }}"></script>

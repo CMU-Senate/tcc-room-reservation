@@ -8,6 +8,7 @@ $(document).ready(() => {
     // eslint-disable-next-line new-cap
     $('#reservations').DataTable({
         pageLength: 25,
+        fixedHeader: true,
         order: [[0, 'asc'], [1, 'desc']].map(([i, o]) => [i + columnOffset, o]),
         initComplete: () => {
             $('.dataTables_length select').addClass('browser-default');
