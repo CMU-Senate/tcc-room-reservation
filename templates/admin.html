@@ -62,26 +62,49 @@
             </button>
         </form>
 
-        <form class="row" method="post" action="/admin/ban-users">
-            Banned users&nbsp;
-            <div class="input-field inline" id="banned-users-field">
-                <select multiple name="banned-users" id="banned-users">
-                    <option value="" disabled>None</option>
-                    {% for user in users|sort(attribute='id') %}
-                        {% if not user.admin %}
-                            <option value="{{user.id}}" {% if user.banned %} selected {% endif %}>{{user.id}}</option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <label for="banned-users">Andrew ID(s)</label>
-            </div>
+        <div class="row">
+            <form class="col s6" method="post" action="/admin/ban-users">
+                Banned users&nbsp;
+                <div class="input-field inline" id="banned-users-field">
+                    <select multiple name="banned-users" id="banned-users">
+                        <option value="" disabled>None</option>
+                        {% for user in users|sort(attribute='id') %}
+                            {% if not user.admin %}
+                                <option value="{{user.id}}" {% if user.banned %} selected {% endif %}>{{user.id}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="banned-users">Andrew ID(s)</label>
+                </div>
 
-            <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+                <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
 
-            <button type="submit" id="update-bans" class="btn btn-sm waves-effect waves-light red darken-4">Update
-                <i class="material-icons right">check</i>
-            </button>
-        </form>
+                <button type="submit" id="update-bans" class="btn btn-sm waves-effect waves-light red darken-4">Update
+                    <i class="material-icons right">check</i>
+                </button>
+            </form>
+
+            <form class="col s6" method="post" action="/admin/set-admins">
+                Admins&nbsp;
+                <div class="input-field inline" id="admins-field">
+                    <select multiple name="admins" id="admins">
+                        <option value="" disabled>None</option>
+                        {% for user in users|sort(attribute='id') %}
+                            {% if not user.id == sudo %}
+                                <option value="{{user.id}}" {% if user.admin %} selected {% endif %}>{{user.id}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                    <label for="admins">Andrew ID(s)</label>
+                </div>
+
+                <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+                <button type="submit" id="update-bans" class="btn btn-sm waves-effect waves-light red darken-4">Update
+                    <i class="material-icons right">check</i>
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

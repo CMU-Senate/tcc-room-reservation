@@ -128,6 +128,7 @@ def admin():
         context = {
             'rooms': db_session.query(Room).all(),
             'users': db_session.query(User).all(),
+            'sudo': app.config['SUDO_USERID'],
         }
         return render_template('admin.html', **context)
     else:
@@ -180,6 +181,25 @@ def login_as():
     login_user(user)
     flash('Logged in as %s.' % user.id)
     return redirect('/')
+
+@app.route('/admin/set-admins', methods=['POST'])
+@login_required
+@admin_required
+def add_admin():
+    users = set(request.form.getlist('admins')) | set([app.config['SUDO_USERID']])
+    if g.user.id not in users:
+        flash('You may not remove your own administrative privileges.')
+        return redirect('/admin')
+
+    for user in db_session.query(User).filter(
+        ((User.admin == True) & ~User.id.in_(users)) |
+        ((User.admin == False) & User.id.in_(users))
+    ).all(): # noqa: E712 (SQLAlchemy requires it)
+        user.admin = user.id in users
+    db_session.commit()
+
+    flash('Updated list of admins: %s.' % ', '.join(users))
+    return redirect('/admin')
 
 @app.route('/logout')
 def logout():
