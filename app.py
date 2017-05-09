@@ -151,7 +151,11 @@ def admin():
 @admin_required
 def ban_users():
     users = set(request.form.getlist('banned-users'))
-    for user in db_session.query(User).all():
+
+    for user in db_session.query(User).filter(
+        ((User.banned == True) & ~User.id.in_(users)) |
+        ((User.banned == False) & User.id.in_(users))
+    ).all(): # noqa: E712 (SQLAlchemy requires it)
         user.banned = user.id in users
     db_session.commit()
 
