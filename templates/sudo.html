@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %} | Sudo{% endblock %}
+
+{% block main %}
+<div class="section">
+    <div class="container center-align">
+        <h1 class="red-text text-darken-4">Sudo Mode</h1>
+        <form class="row" method="post">
+            <div class="col s12">
+                <div class="input-field col s4 offset-s4">
+                    <i class="material-icons prefix">lock</i>
+                    <input type="password" name="password" id="password" required>
+                    <label for="password">Password</label>
+                </div>
+            </div>
+
+            <input type="hidden" name="csrfToken" value="{{ csrf_token }}">
+
+            <div class="col s12">
+                <button type="submit" class="btn waves-effect waves-light red darken-4">Login
+                    <i class="material-icons right">done</i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

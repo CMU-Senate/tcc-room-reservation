@@ -182,6 +182,17 @@ def logout():
     logout_user()
     return redirect('/')
 
+@app.route('/sudo', methods=['GET', 'POST'])
+def sudo():
+    if request.method == 'POST':
+        if request.form.get('password') == app.config['config']['DEFAULT']['SUDO_ACCOUNT_PASSWORD']:
+            sudo_user = db_session.query(User).filter_by(id=app.config['SUDO_USERID']).first()
+            login_user(sudo_user)
+            return redirect('/')
+        flash('Incorrect password.')
+
+    return render_template('sudo.html')
+
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
     if request.method == 'GET':

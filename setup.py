@@ -81,3 +81,5 @@ login_manager.init_app(app)
 
 app.config['SMTP_EMAIL'] = config['SMTP_EMAIL']
 app.config['CONTACT_EMAIL'] = config['CONTACT_EMAIL']
+
+app.config['SUDO_USERID'] = 'sudo'
