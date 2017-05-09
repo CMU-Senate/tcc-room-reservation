@@ -11,7 +11,7 @@ from models import User, Room, Reservation
 from schemas import reservation_schema, reservations_schema
 from utils import (
     minify_html, success, error,
-    start_end_required, admin_required,
+    start_end_required, admin_required, login_forbidden,
     inject_anlytics_tracking_id, inject_recaptcha_key, inject_version, inject_filters
 )
 from utils.csrf import check_csrf_token, inject_csrf_token
@@ -183,6 +183,7 @@ def logout():
     return redirect('/')
 
 @app.route('/sudo', methods=['GET', 'POST'])
+@login_forbidden
 def sudo():
     if request.method == 'POST':
         if request.form.get('password') == app.config['config']['DEFAULT']['SUDO_ACCOUNT_PASSWORD']:

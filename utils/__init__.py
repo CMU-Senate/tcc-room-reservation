@@ -4,7 +4,7 @@ import functools
 from setup import app, version
 from .csrf import update_csrf_token
 
-from flask import jsonify, abort, g, request
+from flask import jsonify, abort, g, request, redirect
 from htmlmin.minify import html_minify
 from webassets.filter import get_filter
 
@@ -71,6 +71,16 @@ def admin_required(handle_request):
     def wrapper(*args, **kwargs):
         if not (g.user and g.user.admin):
             return abort(403)
+
+        return handle_request(*args, **kwargs)
+
+    return wrapper
+
+def login_forbidden(handle_request):
+    @functools.wraps(handle_request)
+    def wrapper(*args, **kwargs):
+        if g.user and g.user.is_authenticated:
+            return redirect('/')
 
         return handle_request(*args, **kwargs)
 
