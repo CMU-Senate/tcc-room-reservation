@@ -1,10 +1,6 @@
 #!/usr/bin/env python3
 
 import datetime
-import smtplib
-import textwrap
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 
 from setup import app, login_manager, db_session, manager
 from models import User, Room, Reservation
@@ -16,6 +12,7 @@ from utils import (
 )
 from utils.csrf import check_csrf_token, inject_csrf_token
 from utils.users import load_user, global_user, inject_user
+from emails import contact_us
 
 import requests
 from flask import render_template, g, request, session, redirect, abort, flash
@@ -238,33 +235,7 @@ def contact():
         email = request.form.get('email')
         comments = request.form.get('comments')
 
-        message = MIMEMultipart('alternative')
-        text = MIMEText(textwrap.dedent(
-            '''
-                From: %s<%s>
-                Body:
-                > %s
-            ''' % (name, email, comments)
-        ), 'plain')
-        html = MIMEText(textwrap.dedent(
-            '''
-                <b>From</b>: %s<%s><br>
-                <b>Body</b>:<br>
-                    <blockquote></blockquote>%s
-                ''' % (name, email, comments)
-        ), 'html')
-
-        message['Subject'] = 'TCC Reservation System Feedback'
-        message['From'] = app.config['SMTP_EMAIL']
-        message['To'] = app.config['CONTACT_EMAIL']
-        message.add_header('reply-to', email)
-
-        message.attach(text)
-        message.attach(html)
-
-        s = smtplib.SMTP('localhost')
-        s.sendmail(app.config['SMTP_EMAIL'], [app.config['CONTACT_EMAIL']], message.as_string())
-        s.quit()
+        contact_us(name, email, comments)
 
         flash('Thank you for your feedback!')
         return redirect('/')
