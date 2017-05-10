@@ -47,6 +47,7 @@ class Reservation(db.Model):
     start = db.Column(db.DateTime, nullable=False)
     end = db.Column(db.DateTime, nullable=False)
     cancelled = db.Column(db.Boolean, default=False, nullable=False)
+    reminded = db.Column(db.Boolean, default=False, nullable=False)
 
     def duration(self):
         return self.end - self.start
