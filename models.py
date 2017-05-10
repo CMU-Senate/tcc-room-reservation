@@ -12,10 +12,10 @@ admins = app.config['config']['DEFAULT']['ADMINS'].split(' ')
 
 class User(db.Model, UserMixin):
     id = db.Column(db.String(8), primary_key=True) # Andrew ID
-    username = db.Column(db.String(100)) # required for Social Flask
-    admin = db.Column(db.Boolean)
-    banned = db.Column(db.Boolean, default=False)
-    last_login = db.Column(db.DateTime, default=func.now())
+    username = db.Column(db.String(100), nullable=False) # required for Social Flask
+    admin = db.Column(db.Boolean, default=False, nullable=False)
+    banned = db.Column(db.Boolean, default=False, nullable=False)
+    last_login = db.Column(db.DateTime, default=func.now(), nullable=False)
     reservations = db.relationship('Reservation', backref='user', lazy='dynamic')
 
     def __init__(self, *args, **kwargs):
@@ -34,7 +34,7 @@ class Room(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), unique=True)
     description = db.Column(db.String(500))
-    reservable = db.Column(db.Boolean)
+    reservable = db.Column(db.Boolean, nullable=False)
     reservations = db.relationship('Reservation', backref='room', lazy='dynamic')
 
     def __repr__(self):
@@ -42,11 +42,11 @@ class Room(db.Model):
 
 class Reservation(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    room_id = db.Column(db.Integer, db.ForeignKey('room.id'))
-    start = db.Column(db.DateTime)
-    end = db.Column(db.DateTime)
-    cancelled = db.Column(db.Boolean, default=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    room_id = db.Column(db.Integer, db.ForeignKey('room.id'), nullable=False)
+    start = db.Column(db.DateTime, nullable=False)
+    end = db.Column(db.DateTime, nullable=False)
+    cancelled = db.Column(db.Boolean, default=False, nullable=False)
 
     def duration(self):
         return self.end - self.start
