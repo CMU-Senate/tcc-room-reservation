@@ -1,4 +1,4 @@
-"""empty message
+"""Add user banned column
 
 Revision ID: 1d91199c02c5
 Revises:
