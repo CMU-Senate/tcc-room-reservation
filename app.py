@@ -53,7 +53,7 @@ def get_reservations(room, start=None, end=None):
 @app.route('/reservation/<int:reservation>')
 @login_required
 def get_reservation(reservation):
-    reservation = db_session.query(Reservation).filter(id == reservation).first()
+    reservation = db_session.query(Reservation).filter_by(id=reservation).first()
     if reservation:
         return reservation_schema.jsonify(reservation)
     else:
