@@ -79,7 +79,4 @@ login_manager.login_view = 'index'
 login_manager.login_message = 'Please login to access that page.'
 login_manager.init_app(app)
 
-app.config['SMTP_EMAIL'] = config['SMTP_EMAIL']
-app.config['CONTACT_EMAIL'] = config['CONTACT_EMAIL']
-
 app.config['SUDO_USERID'] = 'sudo'

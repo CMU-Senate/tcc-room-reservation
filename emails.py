@@ -1,19 +1,22 @@
 #!/usr/bin/env python3
 
 import smtplib
+import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from pathlib import Path
 
-from setup import app
+from setup import app, db_session
+from models import Reservation
 
 emails = Path('emails')
+config = app.config['config']['EMAILS']
 
 def setup_message(subject, to, text, html):
     message = MIMEMultipart('alternative')
 
     message['Subject'] = subject
-    message['From'] = app.config['SMTP_EMAIL']
+    message['From'] = config['SMTP_EMAIL']
     message['To'] = to
 
     message.attach(text)
@@ -28,29 +31,46 @@ def fill_template(template_name, **kwargs):
             MIMEText(html_template.read().format(**kwargs()), 'html')
         )
 
+def send(to, message):
+    with smtplib.SMTP('localhost') as smtp:
+        smtp.sendmail(config['SMTP_EMAIL'], [to], message.as_string())
+
 def contact_us(name, email, comments, subject='TCC Reservation System Feedback'):
     text, html = fill_template('contact_us', name=name, email=email, comments=comments)
 
-    message = setup_message(subject, app.config['CONTACT_EMAIL'], text, html)
+    message = setup_message(subject, config['CONTACT_EMAIL'], text, html)
     message.add_header('reply-to', email)
 
-    with smtplib.SMTP('localhost') as smtp:
-        smtp.sendmail(app.config['SMTP_EMAIL'], [app.config['CONTACT_EMAIL']], message.as_string())
+    send(config['CONTACT_EMAIL'], message)
 
-def reservation_reminder(user):
-    pass
+def reservation_base(template, subject, reservation):
+    text, html = fill_template(template, start=reservation.start, end=reservation.end)
+    message = setup_message(subject, reservation.user.email(), text, html)
+    send(reservation.user.email(), message)
 
-def reservation_confirmed(user):
-    pass
+def reservation_reminder(reservation):
+    reservation_base('reminder', 'TCC Reservation Reminder', reservation)
 
-def reservation_edited(user):
-    pass
+def reservation_confirmed(reservation):
+    reservation_base('confirmation', 'TCC Reservation Confirmation', reservation)
 
-def reservation_cancelled(user):
-    pass
+def reservation_edited(reservation):
+    reservation_base('edit', 'TCC Reservation Edited', reservation)
+
+def reservation_cancelled(reservation):
+    reservation_base('cancellation', 'TCC Reservation Cancelled', reservation)
 
 def main():
-    pass
+    reminder_time = datetime.datetime.now() - datetime.timedelta(minutes=config['REMINDER_TIME_MINUTES'])
+    reservations = db_session.query(Reservation).filter_by(
+        (Reservation.reminded == False) & # noqa: E712
+        Reservation.start >= reminder_time
+    ).all()
+
+    for reservation in reservations:
+        reservation.reminded = True
+        reservation_reminder(reservation)
+        db_session.commit()
 
 if __name__ == '__main__':
     main()
