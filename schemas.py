@@ -6,8 +6,8 @@ from marshmallow import fields
 class ReservationSchema(ma.ModelSchema):
     user = fields.Method('get_user')
 
-    def get_user(self, reservation):
-        user = self.context
+    def get_user(self, reservation, **kwargs):
+        user = self.context['user']
         if user.admin or reservation.user == user:
             return reservation.user.id
         else:
