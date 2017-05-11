@@ -8,7 +8,7 @@ class ReservationSchema(ma.ModelSchema):
 
     def get_user(self, reservation):
         user = self.context
-        if True or user.admin or reservation.user == user:
+        if user.admin or reservation.user == user:
             return reservation.user.id
         else:
             return None
